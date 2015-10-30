@@ -1,0 +1,58 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DynVote</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'home/css/normalize.css' %}"  media="screen" />   
+    <link rel="stylesheet" type="text/css" href="{% static 'home/css/style.css' %}"  media="screen" />   
+ 	<meta charset="utf-8" />
+</head>
+<body>
+
+<div class="header-wrapper wrapper clearfix">
+	<div class="page-title"><h1 class="title">DynVote</h1></div>
+	<div class="page-slogan">The Voting Advice Application that let you ask the questions.</div>
+	<div role="navigation" class="navigation">
+		<ul>
+			<li><a href="/">Start</a></li>
+			<li><a href="">Survey</a></li>
+			<li><a href="/register/add">Register</a></li>
+			<li><a href="/home/login/">Login</a></li>
+		</ul>
+	</div>
+</div>
+
+<div class="content-wrapper wrapper clearfix">
+	<div class="content">
+		{% if registered %}
+        DynVote says: <strong>thank you for registering!</strong>
+        <a href="/">Return to the homepage.</a><br />
+        {% else %}
+        DynVote says: <strong>register here!</strong><br />
+
+        <form id="user_form" method="post" action="/register/"
+                enctype="multipart/form-data">
+
+            {% csrf_token %}
+
+            <!-- Display each form. The as_p method wraps each element in a paragraph
+                 (<p>) element. This ensures each element appears on a new line,
+                 making everything look neater. -->
+            {{ user_form.as_p }}
+            {{ profile_form.as_p }}
+
+            <!-- Provide a button to click to submit the form. -->
+            <input type="submit" name="submit" value="Register" />
+        </form>
+        {% endif %}
+	</div>
+</div>
+
+<div class="footer-wrapper wrapper clearfix">
+	<div class="footer">
+
+	</div>
+</div>
+
+</body>
+</html>
