@@ -13,12 +13,7 @@
 	<div class="page-title"><h1 class="title">DynVote</h1></div>
 	<div class="page-slogan">The Voting Advice Application that let you ask the questions.</div>
 	<div role="navigation" class="navigation">
-		<ul>
-			<li><a href="/">Start</a></li>
-			<li><a href="">Survey</a></li>
-			<li><a href="/register/add">Register</a></li>
-			<li><a href="/home/login/">Login</a></li>
-		</ul>
+        {% include "home/menu.html" %}
 	</div>
 </div>
 
@@ -28,10 +23,7 @@
         DynVote says: <strong>thank you for registering!</strong>
         <a href="/">Return to the homepage.</a><br />
         {% else %}
-        DynVote says: <strong>register here!</strong><br />
-
-        <form id="user_form" method="post" action="/register/"
-                enctype="multipart/form-data">
+        <form id="user_form" method="post" action="/home/register/" enctype="multipart/form-data">
 
             {% csrf_token %}
 

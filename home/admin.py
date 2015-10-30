@@ -1,3 +1,3 @@
-from django.contrib import admin
+# Import the UserProfile model individually.
 
-# Register your models here.
+from home.models import UserProfile

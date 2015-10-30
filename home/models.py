@@ -3,9 +3,6 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 
-#The Django ImageField field makes use of the Python Imaging Library (PIL). Installing PIL along with Django to your setup. If you haven't got PIL installed, you'll need to install it now. If you don't, you'll be greeted with exceptions stating that the module pil cannot be found!
-#Do it with 'pip install pil'
-
 class UserProfile(models.Model):
 	# This line is required. Links UserProfile to a User model instance.
     user = models.OneToOneField(User)
