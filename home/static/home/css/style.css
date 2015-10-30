@@ -233,6 +233,11 @@ h6 {
 
 /** FORM ELEMENTS **/
 
+ul.errorlist li {
+	color: #FF0000;
+	font-weight: bold;
+}
+
 form label {
 	font-weight: bold;
 }

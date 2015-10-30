@@ -40,6 +40,10 @@ def register(request):
             # Once hashed, we can update the user object.
             user.set_password(user.password)
 
+            # Did the user provide a group?
+            # If so, we need to get it from the post and put it in the User model, empty otherwise.
+            user.groups.add(request.POST.get('group', ''))
+
             user.save()
 
             # Now sort out the UserProfile instance.

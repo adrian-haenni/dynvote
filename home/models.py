@@ -3,6 +3,9 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 
+RATING_CHOICES = ((0, u"Agree"), (1, u"Partially Agree"), (2, u"Partially Disagree"), (3, u"Disagree"),)
+
+
 class UserProfile(models.Model):
 	# This line is required. Links UserProfile to a User model instance.
     user = models.OneToOneField(User)
