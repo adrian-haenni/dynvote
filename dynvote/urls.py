@@ -15,8 +15,10 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from django.http import HttpResponseRedirect
 
 urlpatterns = [
+    url(r'^$', lambda r: HttpResponseRedirect('home/')),
     url(r'^$', include('home.urls')),
     url(r'^home/', include('home.urls')),
     url(r'^questions/', include('questions.urls', namespace="questions")),

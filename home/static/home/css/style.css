@@ -122,6 +122,10 @@ body {
 	font-smooth: always;
 }
 
+i {
+	font-style: italic;
+}
+
 a,
 a:before,
 a:after {
@@ -166,6 +170,7 @@ p {
 h1, h2, h3, h4, h5, h6 {
 	line-height: 1.5em;
 	color: #222222;
+	font-weight: bold;
 }
 
 h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
@@ -182,12 +187,17 @@ h1.title {
 	color: #FFFFFF;
 	margin: 15px 15px 15px 15px;
 	line-height: 1em;
+	font-weight: normal;
 }
 
 h2 {
 	font-size: 1.75em;	
 	margin-bottom: 0.75em;
     margin-top: 0;	
+}
+
+.promo-fields h2 {
+	font-size: 1.25em;
 }
 
 h3{
@@ -214,6 +224,10 @@ h6 {
     margin-top: 1em;
 }
 
+.content .fa {
+	font-size: 30px;
+}
+
 /** WRAPPERS **/
 
 .wrapper {
@@ -231,7 +245,13 @@ h6 {
 
 .content-wrapper {
 	display: block;
-	min-height: 450px;
+	min-height: 550px;
+}
+
+.footer-wrapper {
+	display: block;
+	height: 30px;
+	background-color: #2d2d2d;
 }
 
 .front .content-wrapper {
@@ -242,6 +262,28 @@ h6 {
 
 .content {
 	margin: 15px;
+}
+
+.promo-fields {
+	margin: 100px auto;¨
+	width: 100%;
+}
+
+.promo-fields .field {
+	box-sizing: border-box;
+	width: 33.3333%;
+	float: left;
+	padding: 0 15px;
+}
+
+.promo-fields .field-inner {
+	box-sizing: border-box;
+
+	background-color: #FFFFFF;
+	opacity: 0.8;
+	width: 100%;
+	padding: 15px;
+	text-align: center;
 }
 
 .status {
@@ -283,6 +325,20 @@ h6 {
 	height: 64px;
 }
 
+.footer {
+	text-align: center;
+	font-size: 0.65em;
+	color: #FFFFFF;
+}
+
+.survey p {
+	margin-bottom: 0;
+}
+
+.survey ul {
+	margin-bottom: 1em;
+}
+
 .clearfix::after{
 	content: "";
 }
@@ -316,6 +372,10 @@ h6 {
 	padding: 0 15px;
 	text-transform: uppercase;
 	background-color: #04233D;
+}
+
+.navigation li.active a {
+	background-color: #143A5B;
 }
 
 .navigation a:hover{
@@ -359,7 +419,7 @@ input[type="submit"] {
 	padding: 8px 24px;
 	text-decoration: none;
 	
-	background-color: #0097c1;
+	background-color: #04233D;
 	width: auto;
 	
 	border: 0 none;
@@ -373,6 +433,6 @@ input[type="submit"] {
 input[type="submit"]:hover,
 input[type="submit"]:focus,
 input[type="submit"]:active {
-	background-color: #5cc98e;
+	background-color: #44B78B;
 	border: 0 none;
 }

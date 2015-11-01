@@ -3,7 +3,8 @@
 <html>
 <head>
     <title>DynVote</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'home/css/normalize.css' %}"  media="screen" />   
+    <link rel="stylesheet" type="text/css" href="{% static 'home/css/normalize.css' %}"  media="screen" />
+	<link rel="stylesheet" type="text/css" href="{% static 'home/css/font-awesome.css' %}"  media="screen" />
     <link rel="stylesheet" type="text/css" href="{% static 'home/css/style.css' %}"  media="screen" />   
  	<meta charset="utf-8" />
 </head>
@@ -26,7 +27,7 @@
 		{% block content %}
 
     	<div class="survey">
-			<form enctype="multipart/form-data" action="/home/survey" method="post">
+			<form enctype="multipart/form-data" action="/home/survey/" method="post">
 				{% for question in questions %}
 					<p>{{ question.question }}</p><ul>{{ question.form.as_ul }}</ul>
 				{% endfor %}
@@ -38,11 +39,7 @@
 	</div>
 </div>
 
-<div class="footer-wrapper wrapper clearfix">
-	<div class="footer">
-
-	</div>
-</div>
+{% include "home/footer.html" %}
 
 </body>
 </html>
