@@ -1,6 +1,12 @@
-from home.models import UserProfile
+from home.models import UserProfile, ChoiceAnswer
 from django.contrib.auth.models import User, Group
 from django import forms
+
+class ChoiceAnswerForm(forms.ModelForm):
+    class Meta:
+        model = ChoiceAnswer
+        exclude=("question",)
+ChoiceAnswer.form = ChoiceAnswerForm
 
 class UserForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput())

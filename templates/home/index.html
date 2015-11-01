@@ -7,7 +7,7 @@
     <link rel="stylesheet" type="text/css" href="{% static 'home/css/style.css' %}"  media="screen" />   
  	<meta charset="utf-8" />
 </head>
-<body>
+<body class="front">
 
 <div class="header-wrapper wrapper clearfix">
 	<div class="page-title"><h1 class="title">DynVote</h1></div>
@@ -18,14 +18,12 @@
 </div>
 
 <div class="content-wrapper wrapper clearfix">
+
+	{% include "home/status.html" %}
+
 	<div class="content">
-		<div class="intro">
-			{% if user.is_authenticated %}
-			<h1>DynVote says: hello {{ user.username }}!</h1>
-			{% else %}
-			<h1>DynVote says: You are not logged in!</h1>
-			{% endif %}
-		</div>
+
+
 	</div>
 </div>
 

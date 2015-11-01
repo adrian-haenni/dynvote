@@ -1,0 +1,7 @@
+<div class="status">
+	{% if user.is_authenticated %}
+	<strong>Status:</strong> Logged in. Welcome {{ user.username }}!
+	{% else %}
+	<strong>Status:</strong> You are not logged in!
+	{% endif %}
+</div>

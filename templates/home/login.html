@@ -18,6 +18,9 @@
 </div>
 
 <div class="content-wrapper wrapper clearfix">
+
+	{% include "home/status.html" %}
+
 	<div class="content">
 		<form id="login_form" method="post" action="/home/login/">
             {% csrf_token %}

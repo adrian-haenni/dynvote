@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.views import generic
 
@@ -11,8 +11,11 @@ from django.contrib.auth.decorators import login_required
 
 from django.http import HttpResponseRedirect, HttpResponse
 
+from home.models import Question
+
+
 # Create your views here.
- 
+
 def index(request):
     return render_to_response('home/index.html', context_instance=RequestContext(request))
 
@@ -120,6 +123,28 @@ def user_login(request):
         # No context variables to pass to the template system, hence the
         # blank dictionary object...
         return render_to_response('home/login.html', {}, context)
+
+def survey(request):
+    # Like before, obtain the context for the user's request.
+    context = RequestContext(request)
+
+    questions = Question.objects.all()
+    if request.method == 'POST': # If the form has been submitted...
+        print request.POST
+        for q in questions :
+            try:
+                data ={ u'%s-answer'%q.id: request.POST[u'%s-answer'%q.id]}
+            except:
+                data = { u'%s-answer'%q.id: None}
+            q.form = q.answer_type.model_class().form(prefix="%s"%q.id, data=data)
+    else:
+        for q in questions :
+            q.form = q.answer_type.model_class().form(prefix="%s"%q.id)
+
+    return render_to_response('home/survey.html', {
+        'questions': questions,
+    }, context)
+
 
 # Use the login_required() decorator to ensure only those logged in can access the view.
 @login_required

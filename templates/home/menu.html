@@ -1,7 +1,7 @@
 <ul>
 	<li><a href="/">Start</a></li>
-	<li><a href="">Survey</a></li>
 	{% if user.is_authenticated %}
+	<li><a href="/home/survey">Survey</a></li>
 	<li><a href="/home/logout/">Logout</a></li>
 	{% else %}
 	<li><a href="/home/register">Register</a></li>

@@ -1,0 +1,48 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DynVote</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'home/css/normalize.css' %}"  media="screen" />   
+    <link rel="stylesheet" type="text/css" href="{% static 'home/css/style.css' %}"  media="screen" />   
+ 	<meta charset="utf-8" />
+</head>
+<body>
+
+<div class="header-wrapper wrapper clearfix">
+	<div class="page-title"><h1 class="title">DynVote</h1></div>
+	<div class="page-slogan">The Voting Advice Application that let you ask the questions.</div>
+	<div role="navigation" class="navigation">
+		{% include "home/menu.html" %}
+	</div>
+</div>
+
+<div class="content-wrapper wrapper clearfix">
+
+	{% include "home/status.html" %}
+
+	<div class="content">
+
+		{% block content %}
+
+    	<div class="survey">
+			<form enctype="multipart/form-data" action="/home/survey" method="post">
+				{% for question in questions %}
+					<p>{{ question.question }}</p><ul>{{ question.form.as_ul }}</ul>
+				{% endfor %}
+			<div><input type="submit" value="Submit" /></div>
+		</form>
+		</div>
+
+		{% endblock %}
+	</div>
+</div>
+
+<div class="footer-wrapper wrapper clearfix">
+	<div class="footer">
+
+	</div>
+</div>
+
+</body>
+</html>
