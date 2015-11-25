@@ -12,6 +12,7 @@ urlpatterns = [
     url(r'^survey/$', views.survey, name='survey'),
     url(r'^survey/(?P<id>\d+)/$', views.SurveyDetail, name='survey_detail'),
     url(r'^evaluation/$', views.evaluation, name='evaluation'),
-    url(r'^evaluation/(?P<id>\d+)/$', views.EvaluationDetail, name='evaluation_detail'),
+    url(r'^evaluation/(?P<uuid>[0-9A-Za-z]{,36})/$', views.EvaluationDetail, name='evaluation_detail'),
+    url(r'^confirm/(?P<uuid>[0-9A-Za-z]{,36})/$', views.confirm, name='confirm'),
     url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT}),
 ]

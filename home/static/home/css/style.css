@@ -204,6 +204,10 @@ h2 {
 	font-size: 16px;
 }
 
+.updated_time {
+	font-size: 0.75em;
+}
+
 h3{
 	font-size: 1.625em;
 	margin-bottom: 1.2em;

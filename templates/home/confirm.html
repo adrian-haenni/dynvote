@@ -26,6 +26,20 @@
 
 		{% block content %}
 
+		{% if exists %}
+
+		<h2>Your answer has been saved</h2>
+
+		Your response id is: {{uuid}}<br/>
+
+		<a href="/home/evaluation/{{uuid}}">Check now your matches</a><br/>
+
+		{% else %}
+
+		<h2>Unknown response id:</h2>
+
+		{% endif %}
+
 		{% endblock %}
 	</div>
 </div>

@@ -98,19 +98,6 @@ class AnswerRadio(AnswerBase):
 class AnswerSelect(AnswerBase):
     body = models.TextField(blank=True, null=True)
 
-"""
-class Answer(models.Model):
-    question = models.ForeignKey("Question")
-
-class ChoiceAnswer(Answer):
-
-    CHOICES = ((0, u"Agree"), (1, u"Partially Agree"), (2, u"Partially Disagree"), (3, u"Disagree"),)
-
-    answer = models.IntegerField(choices=CHOICES)
-    def __unicode__(self):
-        return u'%s: %s'%(self.question, self.answer)
-"""
-
 #Extension for User Profile
 class UserProfile(models.Model):
 	# This line is required. Links UserProfile to a User model instance.

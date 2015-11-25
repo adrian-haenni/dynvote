@@ -26,6 +26,7 @@ class ResponseForm(models.ModelForm):
 		# type as appropriate.
 		data = kwargs.get('data')
 		for q in survey.questions():
+			#print "q.pk: %d" % q.pk
 			if q.question_type == Question.RADIO:
 				question_choices = q.get_choices()
 
@@ -47,6 +48,16 @@ class ResponseForm(models.ModelForm):
 				self.fields["question_%d" % q.pk].initial = data.get('question_%d' % q.pk)
 
 	def save(self, user, commit=True):
+
+		#check if user already has answered this survey
+		#TO DO: Refacter do not create new object but rather update one
+		oldResponse = Response.objects.filter(user = user, survey = self.survey)
+		num_results = oldResponse.count()
+		if num_results > 0:
+			print 'as user already has answered this survey, system is going to delete old response object(s)'
+			for x in range(0, num_results):
+				delete = Response.objects.get(pk=oldResponse[x].id).delete()
+
 		# save the response object
 		response = super(ResponseForm, self).save(commit=False)
 		response.survey = self.survey
@@ -77,25 +88,6 @@ class ResponseForm(models.ModelForm):
 				a.response = response
 				a.save()
 		return response
-
-"""
-class ChoiceAnswerForm(forms.ModelForm):
-
-    #bar = forms.TypedChoiceField(choices=ChoiceAnswer.CHOICES, widget=forms.RadioSelect, coerce=int)
-
-    class Meta:
-        model = ChoiceAnswer
-        exclude=("question", )
-
-    def save(self, commit=True):
-        # save the response object
-        response = super(ChoiceAnswerForm, self).save(commit=False)
-        response.interview_uuid = self.uuid
-        response.save()
-
-ChoiceAnswer.form = ChoiceAnswerForm
-"""
-
 
 class UserForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput())

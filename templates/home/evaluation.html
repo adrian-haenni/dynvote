@@ -30,9 +30,12 @@
 
             <h2>Select a survey to evaluate:</h2>
 
-            {% for survey in surveys %}
+            {% for response in responses %}
             <div class="survey-element">
-                <a class="survey-link" href="/home/evaluation/{{survey.id}}">{{survey.name}}</a><br/>
+				<p>
+					<a class="survey-link" href="/home/evaluation/{{response.interview_uuid}}">{{response.survey.name}}</a><br/>
+					<div class="updated_time">Last updated: {{response.updated}}<br/></div>
+				</p>
             </div>
             {% endfor %}
 		</div>

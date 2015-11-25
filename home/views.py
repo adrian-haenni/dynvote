@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.views import generic
+from home.models import Response
 
 from home.forms import UserForm, UserProfileForm, ResponseForm
 
@@ -129,16 +130,22 @@ def SurveyDetail(request, id):
     context = RequestContext(request)
     survey = Survey.objects.get(id=id)
 
+    #check if form was previously filled out by current user, if so, pass initial values
+    for q in survey.questions():
+        q.pk
+
     if request.method == 'POST':
         form = ResponseForm(request.POST, survey=survey)
         if form.is_valid():
             response = form.save(request.user)
-            return HttpResponseRedirect("/")
+            uuid = response.interview_uuid
+
+            return HttpResponseRedirect('/home/confirm/'+uuid)
     else:
-		form = ResponseForm(survey=survey)
+        #TO DO remove the test initial, add method
+		form = ResponseForm(survey=survey, initial={'question_33': 'Disagree'})
 		print form
 
-	#return render(request, 'survey_detail.html', {'response_form': form, 'survey': survey})
     return render_to_response('home/survey_detail.html', {'response_form': form, 'survey': survey}, context)
 
 def survey(request):
@@ -151,20 +158,37 @@ def survey(request):
         'surveys': surveys,
     }, context)
 
-def EvaluationDetail(request, id):
+def confirm(request, uuid):
     context = RequestContext(request)
 
+    #check if uuid exists in responses for this user
+    if Response.objects.filter(interview_uuid = uuid, user = request.user).exists():
+        return render_to_response('home/confirm.html', {'uuid': uuid, 'exists': True, }, context)
+    else:
+        return render_to_response('home/confirm.html', {'uuid': uuid, 'exists': False, }, context)
 
 
-    return render_to_response('home/evaluation_detail.html', context)
+def EvaluationDetail(request, uuid):
+    context = RequestContext(request)
+
+    #check if uuid exists in responses for this user
+    if Response.objects.filter(interview_uuid = uuid, user = request.user).exists():
+
+        matchList = None
+
+        return render_to_response('home/evaluation_detail.html', {'uuid': uuid, 'exists': True, 'matchList': matchList, }, context)
+    else:
+
+        return render_to_response('home/evaluation_detail.html', {'uuid': uuid, 'exists': False, 'matchList': None, }, context)
 
 def evaluation(request):
     context = RequestContext(request)
 
-    surveys = Survey.objects.all()
+    #get evaluations of current user
+    responses = Response.objects.filter(user = request.user)
 
     return render_to_response('home/evaluation.html', {
-        'surveys': surveys,
+        'responses': responses,
     }, context)
 
 """
