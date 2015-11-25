@@ -4,14 +4,13 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.views import generic
 
-from home.forms import UserForm, UserProfileForm
+from home.forms import UserForm, UserProfileForm, ResponseForm
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-
 from django.http import HttpResponseRedirect, HttpResponse
 
-from home.models import Question
+from home.models import Question, Category, Survey
 
 
 # Create your views here.
@@ -124,27 +123,75 @@ def user_login(request):
         # blank dictionary object...
         return render_to_response('home/login.html', {}, context)
 
+def SurveyDetail(request, id):
+    #Obtain the context for the user's request.
+
+    context = RequestContext(request)
+    survey = Survey.objects.get(id=id)
+
+    if request.method == 'POST':
+        form = ResponseForm(request.POST, survey=survey)
+        if form.is_valid():
+            response = form.save(request.user)
+            return HttpResponseRedirect("/")
+    else:
+		form = ResponseForm(survey=survey)
+		print form
+
+	#return render(request, 'survey_detail.html', {'response_form': form, 'survey': survey})
+    return render_to_response('home/survey_detail.html', {'response_form': form, 'survey': survey}, context)
+
 def survey(request):
     # Like before, obtain the context for the user's request.
     context = RequestContext(request)
 
+    surveys = Survey.objects.all()
+
+    return render_to_response('home/survey.html', {
+        'surveys': surveys,
+    }, context)
+
+def EvaluationDetail(request, id):
+    context = RequestContext(request)
+
+
+
+    return render_to_response('home/evaluation_detail.html', context)
+
+def evaluation(request):
+    context = RequestContext(request)
+
+    surveys = Survey.objects.all()
+
+    return render_to_response('home/evaluation.html', {
+        'surveys': surveys,
+    }, context)
+
+"""
+def survey(request):
+    # Like before, obtain the context for the user's request.
+    context = RequestContext(request)
+
+    categories = Category.objects.all()
+
     questions = Question.objects.all()
+
     if request.method == 'POST': # If the form has been submitted...
-        print request.POST
-        for q in questions :
-            try:
-                data ={ u'%s-answer'%q.id: request.POST[u'%s-answer'%q.id]}
-            except:
-                data = { u'%s-answer'%q.id: None}
-            q.form = q.answer_type.model_class().form(prefix="%s"%q.id, data=data)
+
+        form = ChoiceAnswerForm(request.POST)
+        if form.is_valid():
+            response = form.save()
+            return HttpResponseRedirect("/")
     else:
+
         for q in questions :
             q.form = q.answer_type.model_class().form(prefix="%s"%q.id)
 
-    return render_to_response('home/survey.html', {
+    return render_to_response('home/survey_detail.html', {
         'questions': questions,
+        'categories': categories,
     }, context)
-
+"""
 
 # Use the login_required() decorator to ensure only those logged in can access the view.
 @login_required

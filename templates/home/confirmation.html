@@ -26,17 +26,6 @@
 
 		{% block content %}
 
-		<div class="survey-overview">
-
-			<h2>Select a survey to fill out:</h2>
-
-			{% for survey in surveys %}
-			<div class="survey-element">
-				<a class="survey-link" href="/home/survey/{{survey.id}}">{{survey.name}}</a><br/>
-			</div>
-			{% endfor %}
-		</div>
-
 		{% endblock %}
 	</div>
 </div>
