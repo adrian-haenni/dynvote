@@ -3,7 +3,6 @@ from django.shortcuts import render
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.views import generic
-from home.models import Response
 
 from home.forms import UserForm, UserProfileForm, ResponseForm
 
@@ -11,7 +10,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse
 
-from home.models import Question, Category, Survey
+from home.models import Question, Category, Survey, Response, AnswerBase, AnswerRadio, AnswerSelect
+from home.utils import generateMatchDict, generateFormInital
 
 
 # Create your views here.
@@ -130,10 +130,6 @@ def SurveyDetail(request, id):
     context = RequestContext(request)
     survey = Survey.objects.get(id=id)
 
-    #check if form was previously filled out by current user, if so, pass initial values
-    for q in survey.questions():
-        q.pk
-
     if request.method == 'POST':
         form = ResponseForm(request.POST, survey=survey)
         if form.is_valid():
@@ -142,9 +138,11 @@ def SurveyDetail(request, id):
 
             return HttpResponseRedirect('/home/confirm/'+uuid)
     else:
-        #TO DO remove the test initial, add method
-		form = ResponseForm(survey=survey, initial={'question_33': 'Disagree'})
-		print form
+
+        #get inital values
+        initialValues = generateFormInital(survey, request.user)
+
+        form = ResponseForm(survey=survey, initial=initialValues)
 
     return render_to_response('home/survey_detail.html', {'response_form': form, 'survey': survey}, context)
 
@@ -171,10 +169,12 @@ def confirm(request, uuid):
 def EvaluationDetail(request, uuid):
     context = RequestContext(request)
 
-    #check if uuid exists in responses for this user
-    if Response.objects.filter(interview_uuid = uuid, user = request.user).exists():
+    userResponse = Response.objects.filter(interview_uuid = uuid, user = request.user)
 
-        matchList = None
+    #check if uuid exists in responses for this user
+    if userResponse.exists():
+
+        matchList = generateMatchDict(userResponse)
 
         return render_to_response('home/evaluation_detail.html', {'uuid': uuid, 'exists': True, 'matchList': matchList, }, context)
     else:
@@ -190,32 +190,6 @@ def evaluation(request):
     return render_to_response('home/evaluation.html', {
         'responses': responses,
     }, context)
-
-"""
-def survey(request):
-    # Like before, obtain the context for the user's request.
-    context = RequestContext(request)
-
-    categories = Category.objects.all()
-
-    questions = Question.objects.all()
-
-    if request.method == 'POST': # If the form has been submitted...
-
-        form = ChoiceAnswerForm(request.POST)
-        if form.is_valid():
-            response = form.save()
-            return HttpResponseRedirect("/")
-    else:
-
-        for q in questions :
-            q.form = q.answer_type.model_class().form(prefix="%s"%q.id)
-
-    return render_to_response('home/survey_detail.html', {
-        'questions': questions,
-        'categories': categories,
-    }, context)
-"""
 
 # Use the login_required() decorator to ensure only those logged in can access the view.
 @login_required

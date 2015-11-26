@@ -2,8 +2,8 @@
 <ul>
 	<li class="menuitem {% navactive request 'index' %}"><a href="{% url 'index' %}">Start</a></li>
 	{% if user.is_authenticated %}
-	<li class="menuitem {% navactive request 'survey' %}"><a href="{% url 'survey' %}">Survey</a></li>
-	<li class="menuitem {% navactive request 'evaluation' %}"><a href="{% url 'evaluation' %}">Evaluation</a></li>
+	<li class="menuitem {% navactive request 'survey' %}"><a href="{% url 'survey' %}">Surveys</a></li>
+	<li class="menuitem {% navactive request 'evaluation' %}"><a href="{% url 'evaluation' %}">Evaluations</a></li>
 	<li class="menuitem {% navactive request 'logout' %}"><a href="{% url 'logout' %}">Logout</a></li>
 	{% else %}
 	<li class="menuitem {% navactive request 'register' %}"><a href="{% url 'register' %}">Register</a></li>

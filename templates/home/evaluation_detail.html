@@ -3,9 +3,7 @@
 <html>
 <head>
     <title>DynVote</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'home/css/normalize.css' %}"  media="screen" />
-	<link rel="stylesheet" type="text/css" href="{% static 'home/css/font-awesome.css' %}"  media="screen" />
-    <link rel="stylesheet" type="text/css" href="{% static 'home/css/style.css' %}"  media="screen" />   
+	{% include "home/header_files.html" %}
  	<meta charset="utf-8" />
 </head>
 <body>
@@ -28,13 +26,15 @@
 
 		<div class="survey-overview">
 
-            <h2>Your Matches:</h2>
+			{% if exists%}
+            <h2>Your Matchlist:</h2>
 
-            {% for survey in surveys %}
-            <div class="survey-element">
-                <a class="survey-link" href="/home/evaluation/{{survey.id}}">{{survey.name}}</a><br/>
-            </div>
-            {% endfor %}
+
+            {% else %}
+			<h2>There is not a response assigned to your account by this id:</h2>
+
+			{% endif %}
+
 		</div>
 
 		{% endblock %}
