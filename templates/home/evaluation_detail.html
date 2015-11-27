@@ -30,6 +30,8 @@
             <h2>Your Matchlist:</h2>
 			{% for match in matchList %}
 
+			<p>{{match.candidate.username}}</p>
+
 			<div class="bar-main-container azure">
 				<div class="wrap">
       				<div class="bar-percentage" data-percentage="{{match.percentage}}"></div>

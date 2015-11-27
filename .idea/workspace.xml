@@ -45,10 +45,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/home/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.64467007">
+            <state vertical-scroll-proportion="0.0">
               <caret line="178" column="106" selection-start-line="178" selection-start-column="97" selection-end-line="178" selection-end-column="106" />
               <folding>
                 <element signature="e#0#35#0" expanded="true" />
@@ -69,21 +69,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="percentage.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/home/static/home/js/percentage.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="3" column="50" selection-start-line="3" selection-start-column="50" selection-end-line="3" selection-end-column="50" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="evaluation_detail.html" pinned="false" current-in-tab="false">
+      <file leaf-file-name="evaluation_detail.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/templates/home/evaluation_detail.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-3.5294118">
-              <caret line="34" column="83" selection-start-line="34" selection-start-column="83" selection-end-line="34" selection-end-column="83" />
+            <state vertical-scroll-proportion="0.2777778">
+              <caret line="32" column="41" selection-start-line="32" selection-start-column="41" selection-end-line="32" selection-end-column="41" />
               <folding />
             </state>
           </provider>
@@ -128,9 +118,9 @@
         <option value="$PROJECT_DIR$/templates/home/footer.html" />
         <option value="$PROJECT_DIR$/home/forms.py" />
         <option value="$PROJECT_DIR$/home/views.py" />
-        <option value="$PROJECT_DIR$/templates/home/evaluation_detail.html" />
         <option value="$PROJECT_DIR$/home/utils.py" />
         <option value="$PROJECT_DIR$/home/static/home/js/percentage.js" />
+        <option value="$PROJECT_DIR$/templates/home/evaluation_detail.html" />
       </list>
     </option>
   </component>
@@ -748,16 +738,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/home/forms.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="2.2222223">
-          <caret line="55" column="122" selection-start-line="55" selection-start-column="122" selection-end-line="55" selection-end-column="122" />
-          <folding>
-            <element signature="e#0#90#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/templates/home/survey.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.028218694">
@@ -766,11 +746,21 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/home/evaluation_detail.html">
+    <entry file="file://$PROJECT_DIR$/home/static/home/js/percentage.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.5294118">
-          <caret line="34" column="83" selection-start-line="34" selection-start-column="83" selection-end-line="34" selection-end-column="83" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="3" column="50" selection-start-line="3" selection-start-column="50" selection-end-line="3" selection-end-column="50" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/home/forms.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="2.2222223">
+          <caret line="55" column="122" selection-start-line="55" selection-start-column="122" selection-end-line="55" selection-end-column="122" />
+          <folding>
+            <element signature="e#0#90#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -784,21 +774,21 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/home/static/home/js/percentage.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="3" column="50" selection-start-line="3" selection-start-column="50" selection-end-line="3" selection-end-column="50" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/home/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.64467007">
+        <state vertical-scroll-proportion="0.0">
           <caret line="178" column="106" selection-start-line="178" selection-start-column="97" selection-end-line="178" selection-end-column="106" />
           <folding>
             <element signature="e#0#35#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/home/evaluation_detail.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.2777778">
+          <caret line="32" column="41" selection-start-line="32" selection-start-column="41" selection-end-line="32" selection-end-column="41" />
+          <folding />
         </state>
       </provider>
     </entry>
