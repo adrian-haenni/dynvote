@@ -173,8 +173,8 @@ def EvaluationDetail(request, uuid):
 
     #check if uuid exists in responses for this user
     if userResponse.exists():
-
-        matchList = generateMatchDict(userResponse)
+        surveyOfResponse = Response.objects.get(interview_uuid = uuid, user = request.user).survey
+        matchList = generateMatchDict(userResponse, surveyOfResponse)
 
         return render_to_response('home/evaluation_detail.html', {'uuid': uuid, 'exists': True, 'matchList': matchList, }, context)
     else:
