@@ -1,7 +1,7 @@
 $('.bar-percentage[data-percentage]').each(function () {
   var progress = $(this);
   var percentage = Math.ceil($(this).attr('data-percentage'));
-  $({countNum: 0}).animate({countNum: percentage}, {
+  $({countNum: 0}).animate({countNum: percentage+1}, {
     duration: 2000,
     easing:'linear',
     step: function() {

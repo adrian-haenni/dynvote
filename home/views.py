@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse
 
 from home.models import Question, Category, Survey, Response, AnswerBase, AnswerRadio, AnswerSelect
-from home.utils import generateMatchDict, generateFormInital
+from home.utils import generateMatches, generateFormInital
 
 
 # Create your views here.
@@ -174,9 +174,9 @@ def EvaluationDetail(request, uuid):
     #check if uuid exists in responses for this user
     if userResponse.exists():
         surveyOfResponse = Response.objects.get(interview_uuid = uuid, user = request.user).survey
-        matchList = generateMatchDict(userResponse, surveyOfResponse)
+        matchResults = generateMatches(userResponse, surveyOfResponse)
 
-        return render_to_response('home/evaluation_detail.html', {'uuid': uuid, 'exists': True, 'matchList': matchList, }, context)
+        return render_to_response('home/evaluation_detail.html', {'uuid': uuid, 'exists': True, 'matchList': matchResults, }, context)
     else:
 
         return render_to_response('home/evaluation_detail.html', {'uuid': uuid, 'exists': False, 'matchList': None, }, context)

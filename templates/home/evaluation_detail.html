@@ -28,15 +28,18 @@
 
 			{% if exists%}
             <h2>Your Matchlist:</h2>
+			{% for match in matchList %}
 
-			<div id="bar-1" class="bar-main-container azure">
+			<div class="bar-main-container azure">
 				<div class="wrap">
-      				<div class="bar-percentage" data-percentage="46"></div>
+      				<div class="bar-percentage" data-percentage="{{match.percentage}}"></div>
 					<div class="bar-container">
 						<div class="bar"></div>
 					</div>
 				</div>
   			</div>
+
+			{% endfor %}
 
             {% else %}
 			<h2>There is not a response assigned to your account by this id:</h2>
