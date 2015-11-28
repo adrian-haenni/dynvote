@@ -1,13 +1,86 @@
-from home.models import UserProfile, Response, Question, Survey, AnswerRadio, AnswerSelect
+from home.models import UserProfile, Response, Question, Survey, AnswerRadio, AnswerSelect, CustomQuestion
 from django.forms import models
 from django.contrib.auth.models import User, Group
 from django import forms
 from django.utils.safestring import mark_safe
 import uuid
+from home.utils import createAskBasesForUsers, getOtherUsers, appendOwnUserToAskedUser
+from django.contrib.admin.widgets import FilteredSelectMultiple
 
 class HorizontalRadioRenderer(forms.RadioSelect.renderer):
     def render(self):
         return mark_safe(u'\n'.join([u'%s\n' % w for w in self]))
+
+class AskFormForCandidates(models.ModelForm):
+	class Meta:
+		model = CustomQuestion
+		fields = '__all__'
+		exclude = ('creator','question_type', 'choices', )
+
+	def __init__(self, *args, **kwargs):
+		super(AskFormForCandidates, self).__init__(*args, **kwargs)
+
+	def save(self, user, commit=True):
+
+		customQuestion = super(AskFormForCandidates, self).save(commit=False)
+		customQuestion.creator = user
+		customQuestion.question_type = Question.RADIO
+		customQuestion.choices = 'Agree, Partially Agree, Partially Disagree, Disagree'
+		customQuestion.save()
+
+		createAskBasesForUsers(User.objects.all(), user, customQuestion)
+
+		return customQuestion
+
+
+class AskFormForVoter(models.ModelForm):
+
+	users_to_ask = forms.ModelMultipleChoiceField('users_to_ask')
+
+	class Meta:
+		model = CustomQuestion
+		fields = '__all__'
+		exclude = ('creator','question_type', 'choices', )
+
+	class Media:
+		css = {'all': ('/static/admin/css/widgets.css',),}
+		#js = ('/static/admin/js/jquery.js', '/static/admin/js/jquery.init.js', '/admin/jsi18n', '/static/admin/js/related-widget-wrapper.js',)
+
+	def __init__(self, *args, **kwargs):
+
+		user = kwargs.pop('user')
+
+		super(AskFormForVoter, self).__init__(*args, **kwargs)
+
+		self.fields['users_to_ask'] = forms.ModelMultipleChoiceField(widget=FilteredSelectMultiple("Users", is_stacked=False),
+											  label=('Select Users'),
+											  queryset=getOtherUsers(user),
+											  required=True)
+
+	def save(self, user, commit=True):
+
+		customQuestion = super(AskFormForVoter, self).save(commit=False)
+		customQuestion.creator = user
+		customQuestion.question_type = Question.RADIO
+		customQuestion.choices = 'Agree, Partially Agree, Partially Disagree, Disagree'
+		customQuestion.save()
+
+		#generate AskBases for asked user and include self
+		askedUsers = self.cleaned_data['users_to_ask']
+		print "the following users have been asked:"
+		for askedUser in askedUsers:
+			print "username: %s" % askedUser.username
+
+		usersToForwardQuestionTo = appendOwnUserToAskedUser(user, askedUsers)
+
+		createAskBasesForUsers(usersToForwardQuestionTo, user, customQuestion)
+
+		return customQuestion
+
+class AskBasesForm(forms.Form):
+
+	def __init__(self, *args, **kwargs):
+		super(AskBasesForm, self).__init__(*args, **kwargs)
 
 class ResponseForm(models.ModelForm):
 	class Meta:

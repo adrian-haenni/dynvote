@@ -1,11 +1,11 @@
 #Place for helper function
 
-from home.models import Question, Response, AnswerBase, AnswerRadio, AnswerSelect, Survey
+from home.models import Question, Response, AnswerBase, AnswerRadio, AnswerSelect, Survey, AskBase
 from django.contrib.auth.models import User, Group
 from operator import itemgetter
 
 #check if form was previously filled out by current user, if so, return initial values, empty dict otherwise
-def generateFormInital(survey, user):
+def generateSurveyFormInital(survey, user):
         #get response if it exists
         previousResponseOfCurrentUser = Response.objects.filter(survey = survey, user = user)
 
@@ -28,10 +28,14 @@ def generateFormInital(survey, user):
 
         return initialValues
 
+def generateAskBasesFormInital(user):
+
+    return None
+
 #generates the matching list over all candidates for a certain response
 def generateMatches(userResponse, surveyOfResponse):
 
-    answerBasesOfVoter = AnswerBase.objects.filter(response = userResponse)
+    answerBasesOfUser = AnswerBase.objects.filter(response = userResponse)
 
     matchResults = []
 
@@ -49,10 +53,13 @@ def generateMatches(userResponse, surveyOfResponse):
             #get answers of candidate
             answerBasesOfCandidate = AnswerBase.objects.filter(response = candiateResponse)
 
+            #if user is candidate, do not compare his results to his own again
+            #TODO
+
             #iterate over questions
             for candidateAnswerBase in answerBasesOfCandidate:
 
-                for userAnswerBase in answerBasesOfVoter:
+                for userAnswerBase in answerBasesOfUser:
 
                     #compare same questions
                     if userAnswerBase.question.pk is candidateAnswerBase.question.pk:
@@ -100,3 +107,28 @@ def getPercentage(hits, total):
     percentage = float(hits) / float(total)
     return int(percentage * 100)
 
+def createAskBasesForUsers(users ,userWhoAsked, customQuestion):
+
+    for user in users:
+        askBase = AskBase(customQuestion=customQuestion, user=user)
+        if userWhoAsked.pk == user.pk:
+            askBase.isAccepted = True
+        else:
+            askBase.isAccepted = False
+
+        #print "creating ask base for %s for question %s" % (user.username, customQuestion.question)
+        askBase.save()
+
+#get all users except self
+def getOtherUsers(user):
+    return User.objects.exclude(pk=user.pk)
+
+#append own user to list of asked users
+def appendOwnUserToAskedUser(ownUser, askedUsers):
+    wantedUsers = set()
+    for user in askedUsers:
+        wantedUsers.add(user.pk)
+
+    wantedUsers.add(ownUser.pk)
+
+    return User.objects.filter(pk__in = wantedUsers)

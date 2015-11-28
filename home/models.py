@@ -98,6 +98,18 @@ class AnswerRadio(AnswerBase):
 class AnswerSelect(AnswerBase):
     body = models.TextField(blank=True, null=True)
 
+class CustomQuestion(Question):
+    creator = models.ForeignKey(User)
+
+class AskBase(models.Model):
+    customQuestion = models.ForeignKey(Question, null=True)
+    user = models.ForeignKey(User, null=True)
+    isAccepted = models.BooleanField()
+
+    def __unicode__(self):
+        return u'%s - %s'%(self.customQuestion.question, self.user.username)
+
+
 #Extension for User Profile
 class UserProfile(models.Model):
 	# This line is required. Links UserProfile to a User model instance.

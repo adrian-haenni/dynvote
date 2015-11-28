@@ -1,0 +1,41 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DynVote</title>
+    {% include "home/header_files_with_admin_js.html" %}
+ 	<meta charset="utf-8" />
+</head>
+<body>
+
+<div class="header-wrapper wrapper clearfix">
+	<div class="page-title"><h1 class="title">DynVote</h1></div>
+	<div class="page-slogan">The Voting Advice Application that let you ask the questions.</div>
+	<div role="navigation" class="navigation">
+		{% include "home/menu.html" %}
+	</div>
+</div>
+
+<div class="content-wrapper wrapper clearfix">
+
+	{% include "home/status.html" %}
+
+	<div class="content">
+
+		{% block content %}
+
+		<div class="ask-overview">
+
+            <h2>Manage Questions:</h2>
+
+		</div>
+
+		{% endblock %}
+
+	</div>
+</div>
+
+{% include "home/footer.html" %}
+
+</body>
+</html>

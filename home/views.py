@@ -4,14 +4,14 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.views import generic
 
-from home.forms import UserForm, UserProfileForm, ResponseForm
+from home.forms import UserForm, UserProfileForm, ResponseForm, AskFormForCandidates, AskFormForVoter, AskBasesForm
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse
 
-from home.models import Question, Category, Survey, Response, AnswerBase, AnswerRadio, AnswerSelect
-from home.utils import generateMatches, generateFormInital
+from home.models import Question, Category, Survey, Response, AnswerBase, AnswerRadio, AnswerSelect, AskBase
+from home.utils import generateMatches, generateSurveyFormInital, generateAskBasesFormInital
 
 
 # Create your views here.
@@ -140,7 +140,7 @@ def SurveyDetail(request, id):
     else:
 
         #get inital values
-        initialValues = generateFormInital(survey, request.user)
+        initialValues = generateSurveyFormInital(survey, request.user)
 
         form = ResponseForm(survey=survey, initial=initialValues)
 
@@ -190,6 +190,53 @@ def evaluation(request):
     return render_to_response('home/evaluation.html', {
         'responses': responses,
     }, context)
+
+def ask(request):
+    context = RequestContext(request)
+
+    isCandidate = request.user.groups.filter(name='Candidate').exists()
+
+    if isCandidate:
+        if request.method == 'POST':
+            form = AskFormForCandidates(request.POST, user = request.user)
+            if form.is_valid():
+                askedQuestion = form.save(user = request.user)
+                return HttpResponseRedirect('/home/ask/'+str(askedQuestion.id))
+        else:
+            form = AskFormForCandidates()
+    else:
+        if request.method == 'POST':
+            form = AskFormForVoter(request.POST, user = request.user)
+            if form.is_valid():
+                askedQuestion = form.save(request.user)
+                return HttpResponseRedirect('/home/ask/'+str(askedQuestion.id))
+        else:
+            form = AskFormForVoter(user = request.user)
+            return render_to_response('home/ask.html', {'ask_form': form, 'isCandidate': isCandidate,}, context)
+
+    return render_to_response('home/ask.html', {'ask_form': form, 'isCandidate': isCandidate,}, context)
+
+def AskDetail(request, id):
+    context = RequestContext(request)
+
+    return render_to_response('home/ask_detail.html', {}, context)
+
+def manage(request):
+    context = RequestContext(request)
+
+    allAskBasesForCurrentUser = AskBase.objects.filter(user = request.user)
+
+    if request.method == 'POST':
+        form = AskBasesForm(request.POST, askBases=allAskBasesForCurrentUser)
+        if form.is_valid():
+            savedForm = form.save(request.user)
+            return HttpResponseRedirect('/home/manage/')
+    else:
+        #get inital values
+        initialValues = generateAskBasesFormInital(request.user)
+        form = AskBasesForm(initial=initialValues)
+
+    return render_to_response('home/manage.html', {'manage_form': form, }, context)
 
 # Use the login_required() decorator to ensure only those logged in can access the view.
 @login_required

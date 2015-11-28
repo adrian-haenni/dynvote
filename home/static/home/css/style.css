@@ -200,7 +200,8 @@ h2 {
 	font-size: 1.25em;
 }
 
-.survey-overview h2 {
+.survey-overview h2,
+.ask-overview h2 {
 	font-size: 16px;
 }
 
@@ -253,6 +254,10 @@ h6 {
 
 .content-wrapper {
 	display: block;
+	min-height: 550px;
+}
+
+.content-wrapper .content {
 	min-height: 550px;
 }
 
@@ -359,7 +364,8 @@ h6 {
 	font-weight: normal;
 }
 
-.survey-overview {
+.survey-overview,
+.ask-overview {
 	float: left;
 }
 
@@ -433,6 +439,10 @@ input[type="text"], input[type="password"], input[type="email"], textarea {
     max-width: 100%;
     outline: none;
     padding: 7px 8px;
+}
+
+.ask-overview input[type="text"], .ask-overview input[type="password"], .ask-overview input[type="email"], .ask-overview textarea {
+	width: 450px;
 }
 
 input[type="text"]:focus, 
@@ -529,3 +539,28 @@ input[type="submit"]:active {
 .violet  { background: #8E5D9F; }
 .yellow  { background: #EFC32F; }
 .red     { background: #E44C41; }
+
+/* SELECTOR */
+
+.selector h2 {
+	margin-bottom: 0;
+}
+
+.selector h2 img {
+	display: none;
+}
+
+.selector .selector-available input {
+    width: 340px !important;
+}
+
+.selector .selector-available label {
+    display: block;
+    padding: 3px 10px 0 0;
+    float: left;
+}
+
+.selector a {
+	font-size: 11px;
+	line-height: 1.2em;
+}
