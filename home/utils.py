@@ -26,6 +26,11 @@ def generateSurveyFormInital(survey, user):
                     a = AnswerSelect.objects.get(id=answerBase.id)
                     initialValues["question_%d" % a.question.pk] = a.body
 
+        #if response does not exists fill out with "No Answer"
+        else:
+            for question in survey.questions():
+                initialValues["question_%d" % question.pk] = "No Answer"
+
         return initialValues
 
 #generates the matching list over all candidates for a certain response
@@ -167,7 +172,7 @@ def getPercentage(hits, total):
     percentage = float(hits) / float(total)
     return int(percentage * 100)
 
-def createAskBasesForUsers(users ,userWhoAsked, customQuestion):
+def createAskBasesForUsers(users, userWhoAsked, customQuestion):
 
     for user in users:
         askBase = AskBase(customQuestion=customQuestion, user=user)
@@ -192,3 +197,10 @@ def appendOwnUserToAskedUser(ownUser, askedUsers):
     wantedUsers.add(ownUser.pk)
 
     return User.objects.filter(pk__in = wantedUsers)
+
+def registerNewUserToAllCandidateQuestions(user):
+    for customQuestion in CustomQuestion.objects.all():
+        if customQuestion.creator.groups.filter(name='Candidate').exists():
+            askBase = AskBase(customQuestion=customQuestion, user=user)
+            askBase.isAccepted = False
+            askBase.save()

@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse
 
 from home.models import Question, Category, Survey, Response, AnswerBase, AnswerRadio, AnswerSelect, AskBase
-from home.utils import generateMatches, generateSurveyFormInital
+from home.utils import generateMatches, generateSurveyFormInital, registerNewUserToAllCandidateQuestions
 
 
 # Create your views here.
@@ -65,6 +65,9 @@ def register(request):
 
             # Update our variable to tell the template registration was successful.
             registered = True
+
+            # Register this user to all candidate questions
+            registerNewUserToAllCandidateQuestions(user)
 
         # Invalid form or forms - mistakes or something else?
         # Print problems to the terminal.
