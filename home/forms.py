@@ -1,10 +1,10 @@
-from home.models import UserProfile, Response, Question, Survey, AnswerRadio, AnswerSelect, CustomQuestion
+from home.models import UserProfile, Response, Question, Survey, AnswerRadio, AnswerSelect, CustomQuestion, AskBase, AnswerBase
 from django.forms import models
 from django.contrib.auth.models import User, Group
 from django import forms
 from django.utils.safestring import mark_safe
 import uuid
-from home.utils import createAskBasesForUsers, getOtherUsers, appendOwnUserToAskedUser
+from home.utils import createAskBasesForUsers, getOtherUsers, appendOwnUserToAskedUser, getUnaskedUsers
 from django.contrib.admin.widgets import FilteredSelectMultiple
 
 class HorizontalRadioRenderer(forms.RadioSelect.renderer):
@@ -89,10 +89,27 @@ class AskBasesForm(forms.Form):
 		super(AskBasesForm, self).__init__(*args, **kwargs)
 
 		for askBase in self.askBases:
-			#if self.user.pk != askBase.customQuestion.creator.pk:
-			self.fields["question_%d" % askBase.customQuestion.pk] = forms.BooleanField(label=askBase.customQuestion.question,
-																						initial=askBase.isAccepted,
-																						required=False)
+
+			#create label
+			#own question, i'm candidate, delete
+			if (self.user.pk == askBase.customQuestion.creator.pk) and askBase.customQuestion.creator.groups.filter(name='Candidate').exists():
+				label = "%s - ( <a href=\"/home/deleteq/%d\">Delete</a> )" % (askBase.customQuestion.question, askBase.customQuestion.id)
+
+			#own question, i'm not candidate, delete, forward
+			elif (self.user.pk == askBase.customQuestion.creator.pk) and not askBase.customQuestion.creator.groups.filter(name='Candidate').exists():
+				label = "%s - ( <a href=\"/home/deleteq/%d\">Delete</a>, <a href=\"/home/forward/%d\">Forward</a> )" % (askBase.customQuestion.question, askBase.customQuestion.id, askBase.customQuestion.id)
+
+			#other question, creator not candidate, remove, forward
+			elif (self.user.pk != askBase.customQuestion.creator.pk) and not askBase.customQuestion.creator.groups.filter(name='Candidate').exists():
+				label = "%s - ( <a href=\"/home/deleteq/%d\">Remove</a>, <a href=\"/home/forward/%d\">Forward</a> )" % (askBase.customQuestion.question, askBase.customQuestion.id, askBase.customQuestion.id)
+
+			#other question, creator candidate, cannot do anything
+			else:
+				label = "%s" % askBase.customQuestion.question
+
+			self.fields["question_%d" % askBase.customQuestion.pk] = forms.BooleanField(label=mark_safe(label),
+																					   initial=askBase.isAccepted,
+																					   required=False,)
 				#self.fields["question_%d" % askBase.customQuestion.pk].widget.attrs['onclick'] = "return false"
 			if self.user.pk != askBase.customQuestion.creator.pk:
 				self.fields["question_%d" % askBase.customQuestion.pk].help_text = askBase.customQuestion.creator.username
@@ -103,6 +120,65 @@ class AskBasesForm(forms.Form):
 		for askBase in self.askBases:
 			boolValueForQuestion = self.cleaned_data['question_%d' % askBase.customQuestion.pk]
 			askBase.isAccepted = boolValueForQuestion
+			askBase.save()
+
+class DeleteQuestionForm(forms.Form):
+
+	def __init__(self, *args, **kwargs):
+		self.user = kwargs.pop('user')
+		self.customQuestion = kwargs.pop('customQuestion')
+
+		super(DeleteQuestionForm, self).__init__(*args, **kwargs)
+
+	def save(self, commit=True):
+		#if i'm creator delete this question
+		if self.customQuestion.creator.pk == self.user.pk:
+			print "delete question %s" % self.customQuestion.question[0:24]+"..."
+			deleted = CustomQuestion.objects.get(pk=self.customQuestion.pk).delete()
+
+		#if i'm not creator remove this question from my asked questions
+		elif self.customQuestion.creator.pk != self.user.pk:
+			print "remove question %s for user %s" % (self.customQuestion.question[0:24]+"...", self.user.username)
+			#check if i was subscribed to this question
+			for askBase in self.customQuestion.askbase_set.all():
+				if askBase.user.pk == self.user.pk:
+					print "delete askbase for user %s" % self.user.username
+					deleted_askbase = AskBase.objects.get(pk=askBase.pk).delete()
+
+					print "delete old response if it exists"
+					for answerBase in AnswerBase.objects.filter(question=self.customQuestion):
+						if answerBase.response.user.pk == self.user.pk:
+							deleted_answer = AnswerBase.objects.get(pk=answerBase.pk).delete()
+							break
+					break
+
+class ForwardQuestionForm(forms.Form):
+
+	class Media:
+		css = {'all': ('/static/admin/css/widgets.css',),}
+		#js = ('/static/admin/js/jquery.js', '/static/admin/js/jquery.init.js', '/admin/jsi18n', '/static/admin/js/related-widget-wrapper.js',)
+
+
+	def __init__(self, *args, **kwargs):
+		self.user = kwargs.pop('user')
+		self.customQuestion = kwargs.pop('customQuestion')
+
+		super(ForwardQuestionForm, self).__init__(*args, **kwargs)
+
+		self.fields['users_to_ask'] = forms.ModelMultipleChoiceField(widget=FilteredSelectMultiple("Users", is_stacked=False),
+									  label=('Select Users'),
+									  queryset=getUnaskedUsers(self.customQuestion),
+									  required=True)
+
+	def save(self, commit=True):
+
+		#generate AskBases for asked user and include self
+		askedUsers = self.cleaned_data['users_to_ask']
+		print "the following users have been asked:"
+		for askedUser in askedUsers:
+			print "username: %s" % askedUser.username
+			askBase = AskBase(customQuestion=self.customQuestion, user=askedUser)
+			askBase.isAccepted = False
 			askBase.save()
 
 class ResponseForm(models.ModelForm):

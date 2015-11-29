@@ -188,6 +188,15 @@ def createAskBasesForUsers(users, userWhoAsked, customQuestion):
 def getOtherUsers(user):
     return User.objects.exclude(pk=user.pk)
 
+def getUnaskedUsers(customQuestion):
+    unaskedUsers = set()
+
+    for user in User.objects.all():
+        if not AskBase.objects.filter(customQuestion=customQuestion, user=user).exists():
+            unaskedUsers.add(user.pk)
+
+    return User.objects.filter(pk__in = unaskedUsers)
+
 #append own user to list of asked users
 def appendOwnUserToAskedUser(ownUser, askedUsers):
     wantedUsers = set()

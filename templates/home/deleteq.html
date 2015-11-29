@@ -3,7 +3,7 @@
 <html>
 <head>
     <title>DynVote</title>
-    {% include "home/header_files_with_admin_js.html" %}
+	{% include "home/header_files.html" %}
  	<meta charset="utf-8" />
 </head>
 <body>
@@ -26,34 +26,22 @@
 
 		<div class="ask-overview">
 
-            <h2>Manage Questions:</h2>
-
-			<p>Check all question which you want to approve</p>
-
-			<div class="survey">
-			<form enctype="multipart/form-data" action="/home/approve/" method="post">
+			{% if isDelete %}
+				<h2>Delete Question:</h2>
+				<p>Do you really want to delete question: {{customQuestion.question}}</p>
+			{% else %}
+				<h2>Remove from Question:</h2>
+				<p>Do you really want to remove yourself from question: {{customQuestion.question}}</p>
+			{% endif %}
+			<form enctype="multipart/form-data" action="/home/deleteq/{{customQuestion.id}}/" method="post">
 				{% csrf_token %}
-
-				<ul>
-				{% for field in approve_form %}
-					<li class="q-item" value="">
-						<div class="field-wrapper">
-							<label class="label-inline">{{ field.label }} - <i>asked by {{ field.help_text }}</i></label>
-							<div class="form-field-body">
-								Accept: {{ field }}
-							</div>
-						</div>
-					</li>
-				{% endfor %}
-				</ul>
-				<div><input type="submit" value="Submit" /></div>
+				<div><input type="submit" value="Confirm" /></div>
 			</form>
 			</div>
 
 		</div>
 
 		{% endblock %}
-
 	</div>
 </div>
 

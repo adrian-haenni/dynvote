@@ -4,13 +4,13 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.views import generic
 
-from home.forms import UserForm, UserProfileForm, ResponseForm, AskFormForCandidates, AskFormForVoter, AskBasesForm
+from home.forms import UserForm, UserProfileForm, ResponseForm, AskFormForCandidates, AskFormForVoter, AskBasesForm, DeleteQuestionForm, ForwardQuestionForm
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse
 
-from home.models import Question, Category, Survey, Response, AnswerBase, AnswerRadio, AnswerSelect, AskBase
+from home.models import Question, Category, Survey, Response, AnswerBase, AnswerRadio, AnswerSelect, AskBase, CustomQuestion
 from home.utils import generateMatches, generateSurveyFormInital, registerNewUserToAllCandidateQuestions
 
 
@@ -239,6 +239,48 @@ def approve(request):
         approve_form = AskBasesForm(user = request.user, askBases=allAskBasesForCurrentUser)
 
     return render_to_response('home/approve.html', {'approve_form': approve_form, }, context)
+
+def deleteq(request, id):
+    context = RequestContext(request)
+
+    #get custom question
+    customQuestion = CustomQuestion.objects.get(id = id)
+
+    isDelete = False
+    if customQuestion.creator.pk == request.user.pk:
+        isDelete = True
+
+    if request.method == 'POST':
+        delete_question_form = DeleteQuestionForm(request.POST, user = request.user, customQuestion=customQuestion)
+        if delete_question_form.is_valid():
+            delete_question_form.save()
+            return HttpResponseRedirect('/home/approve/')
+    else:
+        #inital values set by form
+        delete_question_form = DeleteQuestionForm(user = request.user, customQuestion=customQuestion)
+
+    return render_to_response('home/deleteq.html', {'delete_question_form': delete_question_form,
+                                                    'customQuestion': customQuestion,
+                                                    'isDelete': isDelete,}, context)
+
+def forward(request, id):
+    context = RequestContext(request)
+
+    #get custom question
+    customQuestion = CustomQuestion.objects.get(id = id)
+
+    if request.method == 'POST':
+        forward_question_form = ForwardQuestionForm(request.POST, user = request.user, customQuestion=customQuestion)
+        if forward_question_form.is_valid():
+            forward_question_form.save()
+            return HttpResponseRedirect('/home/approve/')
+    else:
+        #inital values set by form
+        forward_question_form = ForwardQuestionForm(user = request.user, customQuestion=customQuestion)
+
+    return render_to_response('home/forward.html', {'forward_question_form': forward_question_form,
+                                                    'customQuestion': customQuestion,
+                                                    }, context)
 
 # Use the login_required() decorator to ensure only those logged in can access the view.
 @login_required

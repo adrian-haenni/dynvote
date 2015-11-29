@@ -3,7 +3,8 @@
 <html>
 <head>
     <title>DynVote</title>
-    {% include "home/header_files_with_admin_js.html" %}
+	{% include "home/header_files_with_admin_js.html" %}
+	{{forward_question_form.media}}
  	<meta charset="utf-8" />
 </head>
 <body>
@@ -26,34 +27,29 @@
 
 		<div class="ask-overview">
 
-            <h2>Manage Questions:</h2>
+            <h2>Forward Question To:</h2>
 
-			<p>Check all question which you want to approve</p>
+			<p>{{customQuestion.question}}</p>
 
-			<div class="survey">
-			<form enctype="multipart/form-data" action="/home/approve/" method="post">
-				{% csrf_token %}
-
-				<ul>
-				{% for field in approve_form %}
+				<form enctype="multipart/form-data" action="/home/forward/{{customQuestion.id}}/" method="post">
+					{% csrf_token %}
+					{% for field in forward_question_form %}
 					<li class="q-item" value="">
 						<div class="field-wrapper">
-							<label class="label-inline">{{ field.label }} - <i>asked by {{ field.help_text }}</i></label>
+							{{ field.errors }}
+							<label class="label-inline">{{ field.label }}</label>
 							<div class="form-field-body">
-								Accept: {{ field }}
+								{{ field }}
 							</div>
 						</div>
 					</li>
-				{% endfor %}
-				</ul>
-				<div><input type="submit" value="Submit" /></div>
-			</form>
-			</div>
+					{% endfor %}
+					<div><input type="submit" value="Submit" /></div>
+				</form>
 
 		</div>
 
 		{% endblock %}
-
 	</div>
 </div>
 

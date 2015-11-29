@@ -13,6 +13,8 @@ urlpatterns = [
     url(r'^survey/(?P<id>\d+)/$', views.SurveyDetail, name='survey_detail'),
     url(r'^ask/$', views.ask, name='ask'),
     url(r'^ask/(?P<id>\d+)/$', views.AskDetail, name='ask_detail'),
+    url(r'^deleteq/(?P<id>\d+)/$', views.deleteq, name='deleteq'),
+    url(r'^forward/(?P<id>\d+)/$', views.forward, name='forward'),
     url(r'^approve/$', views.approve, name='approve'),
     url(r'^admin/jsi18n/$', 'django.views.i18n.javascript_catalog'),
     url(r'^evaluation/$', views.evaluation, name='evaluation'),
