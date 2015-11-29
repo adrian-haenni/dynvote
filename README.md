@@ -1,11 +1,11 @@
-# DynVote - The VAA with Dynamic User Profiles
+# DynVote - Dynamic Voting Advice Application
 ---
 
 The application DynVote is a Voting Advice Application designed in the fashion of SmartVote that provides users with recommendations of candidates based on the degree of accordance of their political profiles. Unlike other VAAs, DynVote matches voters with candidates on a dynamic level, which means that user profiles are not static. A dynamic user profile in this application is characterized by the feature that lets voters and candidates create own questions and publish them to other users.
 
 <br>
 
-### Installation Guide:
+## Installation Guide:
 Please follow the following instructions in order to make the application run locally:
 
 * Clone the Project: [GitHub Repository](https://github.com/adrian-haenni/dynvote)
@@ -19,7 +19,7 @@ Please follow the following instructions in order to make the application run lo
 
 <br>
 
-### User Manual:
+## User Manual:
 After having successfully installed the environment, you can start to use the application. 
 <div style="text-align: center">
     <img src="ScreenShots/home.png" width="800" height="500" style="display:inline"/>
