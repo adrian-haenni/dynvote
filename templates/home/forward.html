@@ -25,7 +25,7 @@
 
 		{% block content %}
 
-		<div class="ask-overview">
+		<div class="ask-form">
 
 			{% if not isCreatedByCandidate %}
             <h2>Forward Question To:</h2>
@@ -34,6 +34,7 @@
 
 				<form enctype="multipart/form-data" action="/home/forward/{{customQuestion.id}}/" method="post">
 					{% csrf_token %}
+					<ul>
 					{% for field in forward_question_form %}
 					<li class="q-item" value="">
 						<div class="field-wrapper">
@@ -45,6 +46,7 @@
 						</div>
 					</li>
 					{% endfor %}
+					</ul>
 					<div><input type="submit" value="Submit" /></div>
 				</form>
 			{% else %}
