@@ -13,7 +13,7 @@ urlpatterns = [
     url(r'^survey/(?P<id>\d+)/$', views.SurveyDetail, name='survey_detail'),
     url(r'^ask/$', views.ask, name='ask'),
     url(r'^ask/(?P<id>\d+)/$', views.AskDetail, name='ask_detail'),
-    url(r'^manage/$', views.manage, name='manage'),
+    url(r'^approve/$', views.approve, name='approve'),
     url(r'^admin/jsi18n/$', 'django.views.i18n.javascript_catalog'),
     url(r'^evaluation/$', views.evaluation, name='evaluation'),
     url(r'^evaluation/(?P<uuid>[0-9A-Za-z]{,36})/$', views.EvaluationDetail, name='evaluation_detail'),

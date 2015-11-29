@@ -28,6 +28,28 @@
 
             <h2>Manage Questions:</h2>
 
+			<p>Check all question which you want to approve</p>
+
+			<div class="survey">
+			<form enctype="multipart/form-data" action="/home/approve/" method="post">
+				{% csrf_token %}
+
+				<ul>
+				{% for field in approve_form %}
+					<li class="q-item" value="">
+						<div class="field-wrapper">
+							<label class="label-inline">{{ field.label }} - <i>asked by {{ field.help_text }}</i></label>
+							<div class="form-field-body">
+								{{ field }}
+							</div>
+						</div>
+					</li>
+				{% endfor %}
+				</ul>
+				<div><input type="submit" value="Submit" /></div>
+			</form>
+			</div>
+
 		</div>
 
 		{% endblock %}

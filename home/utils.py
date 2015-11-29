@@ -1,6 +1,6 @@
 #Place for helper function
 
-from home.models import Question, Response, AnswerBase, AnswerRadio, AnswerSelect, Survey, AskBase
+from home.models import Question, Response, AnswerBase, AnswerRadio, AnswerSelect, Survey, AskBase, CustomQuestion
 from django.contrib.auth.models import User, Group
 from operator import itemgetter
 
@@ -28,10 +28,6 @@ def generateSurveyFormInital(survey, user):
 
         return initialValues
 
-def generateAskBasesFormInital(user):
-
-    return None
-
 #generates the matching list over all candidates for a certain response
 def generateMatches(userResponse, surveyOfResponse):
 
@@ -54,54 +50,118 @@ def generateMatches(userResponse, surveyOfResponse):
             answerBasesOfCandidate = AnswerBase.objects.filter(response = candiateResponse)
 
             #if user is candidate, do not compare his results to his own again
-            #TODO
+            if userResponse[0].user.pk != candiateResponse[0].user.pk:
 
-            #iterate over questions
-            for candidateAnswerBase in answerBasesOfCandidate:
+                #iterate over questions
+                for candidateAnswerBase in answerBasesOfCandidate:
 
-                for userAnswerBase in answerBasesOfUser:
+                    for userAnswerBase in answerBasesOfUser:
 
-                    #compare same questions
-                    if userAnswerBase.question.pk is candidateAnswerBase.question.pk:
+                        #compare same questions
+                        if userAnswerBase.question.pk is candidateAnswerBase.question.pk:
 
-                        print "user %s" % userAnswerBase.response.user.username
-                        print "cand %s" % candidateAnswerBase.response.user.username
+                            print "======================="
+                            print "WILL CHECK ANSWERS FOR:"
+                            print "User:\t\t %s" % userAnswerBase.response.user.username
+                            print "Candidate:\t %s" % candidateAnswerBase.response.user.username
 
-                        if userAnswerBase.question.question_type == Question.RADIO:
-                            a = AnswerRadio.objects.get(id=userAnswerBase.id)
-                            c = AnswerRadio.objects.get(id=candidateAnswerBase.id)
-                            print "user answer: %s" % a.body
-                            print "cand answer: %s" % c.body
 
-                        elif userAnswerBase.question.question_type == Question.SELECT:
-                            a = AnswerSelect.objects.get(id=userAnswerBase.id)
-                            c = AnswerSelect.objects.get(id=candidateAnswerBase.id)
-                            print "user answer: %s" % a.body
-                            print "cand answer: %s" % c.body
+                            #check if question is a custom question, if so, check if it has been approved by candidate and voter/candidate
+                            if CustomQuestion.objects.filter(pk=userAnswerBase.question.pk).exists():
+                                customQuestion = CustomQuestion.objects.get(pk=userAnswerBase.question.pk)
 
-                        if a.body == c.body:
-                            print "SAME ANSWER"
-                            numOfSameAnswersForThisCandidate += 1
+                                bothApproved = checkForApprovance(customQuestion, userResponse[0].user.pk, candiateResponse[0].user.pk)
+                                if bothApproved:
+                                    print "BOTH APPROVED"
+                                    sameAnswer, bothIsNoAnswer  = checkForSameAnswer(userAnswerBase, candidateAnswerBase)
 
-                        break
+                                    if bothIsNoAnswer:
+                                        break
+                                    elif sameAnswer:
+                                        numOfSameAnswersForThisCandidate += 1
 
-            numOfCandidateAnswers = answerBasesOfCandidate.count()
-            print "NUMBER of answers: %d" % numOfCandidateAnswers
-            print "NUMBER of same answers: %d" % numOfSameAnswersForThisCandidate
+                                    break
+                            else:
+                                sameAnswer, bothIsNoAnswer  = checkForSameAnswer(userAnswerBase, candidateAnswerBase)
 
-            percentage = getPercentage(numOfSameAnswersForThisCandidate, numOfCandidateAnswers)
-            print "percentage %d" % percentage
+                                if bothIsNoAnswer:
+                                    break
+                                elif sameAnswer:
+                                    numOfSameAnswersForThisCandidate += 1
 
-            #create the dict
-            dict = {'candidate': candidate,
-                    'percentage': percentage,
-                    }
+                                break
 
-            matchResults.append(dict)
+
+                numOfCandidateAnswersWithoutNoAnswer = 0
+                for answerBaseToCount in answerBasesOfCandidate:
+                    if answerBaseToCount.question.question_type == Question.RADIO:
+                        a = AnswerRadio.objects.get(id=answerBaseToCount.id)
+                        if a.body != "No Answer":
+                            numOfCandidateAnswersWithoutNoAnswer += 1
+
+                    elif answerBaseToCount.question.question_type == Question.SELECT:
+                        a = AnswerSelect.objects.get(id=answerBaseToCount.id)
+                        if a.body != "No Answer":
+                            numOfCandidateAnswersWithoutNoAnswer += 1
+
+                print "NUMBER of answers: %d" % numOfCandidateAnswersWithoutNoAnswer
+                print "NUMBER of same answers: %d" % numOfSameAnswersForThisCandidate
+
+                percentage = getPercentage(numOfSameAnswersForThisCandidate, numOfCandidateAnswersWithoutNoAnswer)
+                print "percentage %d" % percentage
+
+                #create the dict
+                dict = {'candidate': candidate,
+                        'percentage': percentage,
+                        }
+
+                matchResults.append(dict)
 
     sortedMatchResults = sorted(matchResults, key=itemgetter('percentage'), reverse=True)
 
     return sortedMatchResults
+
+
+def checkForSameAnswer(userAnswerBase, candidateAnswerBase):
+
+    if userAnswerBase.question.question_type == Question.RADIO:
+        a = AnswerRadio.objects.get(id=userAnswerBase.id)
+        c = AnswerRadio.objects.get(id=candidateAnswerBase.id)
+        #print "user answer: %s" % a.body
+        #print "cand answer: %s" % c.body
+
+    elif userAnswerBase.question.question_type == Question.SELECT:
+        a = AnswerSelect.objects.get(id=userAnswerBase.id)
+        c = AnswerSelect.objects.get(id=candidateAnswerBase.id)
+        #print "user answer: %s" % a.body
+        #print "cand answer: %s" % c.body
+
+    if a.body == c.body:
+        print "SAME ANSWER"
+        if a.body == "No Answer":
+            return (True, True)
+        else:
+            return (True, False)
+
+    return (False, False)
+
+def checkForApprovance(customQuestion, userPK, candidatePK):
+    print "customQuestion: %s" % customQuestion.question[0:24]+"..."
+
+    isApprovedByUser = False
+    isApprovedByCandidate = False
+
+    #iterate over askBases for this custom question, check if they are currently approved
+    for askBase in customQuestion.askbase_set.all():
+        if askBase.isAccepted == True and askBase.user.pk == userPK:
+            isApprovedByUser = True
+        elif askBase.isAccepted == True and askBase.user.pk == candidatePK:
+            isApprovedByCandidate = True
+
+        if isApprovedByUser and isApprovedByCandidate:
+            return True
+
+    return False
 
 def getPercentage(hits, total):
     percentage = float(hits) / float(total)

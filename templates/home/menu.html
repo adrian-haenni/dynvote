@@ -5,7 +5,7 @@
 	<li class="menuitem {% navactive request 'survey' %}"><a href="{% url 'survey' %}">Surveys</a></li>
 	<li class="menuitem {% navactive request 'evaluation' %}"><a href="{% url 'evaluation' %}">Evaluations</a></li>
 	<li class="menuitem {% navactive request 'ask' %}"><a href="{% url 'ask' %}">Ask</a></li>
-	<li class="menuitem {% navactive request 'manage' %}"><a href="{% url 'manage' %}">Manage Questions</a></li>
+	<li class="menuitem {% navactive request 'approve' %}"><a href="{% url 'approve' %}">Approve Questions</a></li>
 	<li class="menuitem {% navactive request 'logout' %}"><a href="{% url 'logout' %}">Logout</a></li>
 	{% else %}
 	<li class="menuitem {% navactive request 'register' %}"><a href="{% url 'register' %}">Register</a></li>

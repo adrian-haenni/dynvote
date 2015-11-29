@@ -92,6 +92,9 @@ class AnswerBase(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
+    def __unicode__(self):
+        return u'AnswerBase - %s - %s' % (self.question.question[0:24]+"...", self.response.user.username)
+
 class AnswerRadio(AnswerBase):
     body = models.TextField(blank=True, null=True)
 
@@ -102,7 +105,7 @@ class CustomQuestion(Question):
     creator = models.ForeignKey(User)
 
 class AskBase(models.Model):
-    customQuestion = models.ForeignKey(Question, null=True)
+    customQuestion = models.ForeignKey(CustomQuestion, null=True)
     user = models.ForeignKey(User, null=True)
     isAccepted = models.BooleanField()
 

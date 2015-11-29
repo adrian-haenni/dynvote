@@ -18,6 +18,9 @@ class AskFormForCandidates(models.ModelForm):
 		exclude = ('creator','question_type', 'choices', )
 
 	def __init__(self, *args, **kwargs):
+
+		user = kwargs.pop('user')
+
 		super(AskFormForCandidates, self).__init__(*args, **kwargs)
 
 	def save(self, user, commit=True):
@@ -62,7 +65,7 @@ class AskFormForVoter(models.ModelForm):
 		customQuestion = super(AskFormForVoter, self).save(commit=False)
 		customQuestion.creator = user
 		customQuestion.question_type = Question.RADIO
-		customQuestion.choices = 'Agree, Partially Agree, Partially Disagree, Disagree'
+		customQuestion.choices = 'Agree, Partially Agree, Partially Disagree, Disagree, No Answer'
 		customQuestion.save()
 
 		#generate AskBases for asked user and include self
@@ -80,7 +83,27 @@ class AskFormForVoter(models.ModelForm):
 class AskBasesForm(forms.Form):
 
 	def __init__(self, *args, **kwargs):
+		self.user = kwargs.pop('user')
+		self.askBases = kwargs.pop('askBases')
+
 		super(AskBasesForm, self).__init__(*args, **kwargs)
+
+		for askBase in self.askBases:
+			#if self.user.pk != askBase.customQuestion.creator.pk:
+			self.fields["question_%d" % askBase.customQuestion.pk] = forms.BooleanField(label=askBase.customQuestion.question,
+																						initial=askBase.isAccepted,
+																						required=False)
+				#self.fields["question_%d" % askBase.customQuestion.pk].widget.attrs['onclick'] = "return false"
+			if self.user.pk != askBase.customQuestion.creator.pk:
+				self.fields["question_%d" % askBase.customQuestion.pk].help_text = askBase.customQuestion.creator.username
+			else:
+				self.fields["question_%d" % askBase.customQuestion.pk].help_text = "yourself"
+
+	def save(self, commit=True):
+		for askBase in self.askBases:
+			boolValueForQuestion = self.cleaned_data['question_%d' % askBase.customQuestion.pk]
+			askBase.isAccepted = boolValueForQuestion
+			askBase.save()
 
 class ResponseForm(models.ModelForm):
 	class Meta:
@@ -92,6 +115,8 @@ class ResponseForm(models.ModelForm):
 		# expects a survey object to be passed in initially
 		survey = kwargs.pop('survey')
 		self.survey = survey
+		currentUser = kwargs.pop('currentUser')
+		self.currentUser = currentUser
 		super(ResponseForm, self).__init__(*args, **kwargs)
 		self.uuid = random_uuid = uuid.uuid4().hex
 
@@ -99,22 +124,46 @@ class ResponseForm(models.ModelForm):
 		# type as appropriate.
 		data = kwargs.get('data')
 		for q in survey.questions():
-			#print "q.pk: %d" % q.pk
-			if q.question_type == Question.RADIO:
-				question_choices = q.get_choices()
 
-				self.fields["question_%d" % q.pk] = forms.ChoiceField(label=q.question,
-					widget=forms.RadioSelect(renderer=HorizontalRadioRenderer),
-					choices = question_choices)
-			elif q.question_type == Question.SELECT:
-				question_choices = q.get_choices()
-				# add an empty option at the top so that the user has to
-				# explicitly select one of the options
-				question_choices = tuple([('', '-------------')]) + question_choices
+			#Add special treatment for question objects that are also custom questions
+			if CustomQuestion.objects.filter(pk=q.pk).exists():
+				#"cast" to CustomQuestion Class
+				customQuestion = CustomQuestion.objects.get(pk=q.pk)
+				for askBase in customQuestion.askbase_set.all():
+					if askBase.isAccepted == True and askBase.user.pk == self.currentUser.pk:
+						print "%s did approve question id %d" % (askBase.user.username, customQuestion.id)
 
-				self.fields["question_%d" % q.pk] = forms.ChoiceField(label=q.question,
-					widget=forms.Select, choices = question_choices)
+						if q.question_type == Question.RADIO:
+							question_choices = q.get_choices()
 
+							self.fields["question_%d" % q.pk] = forms.ChoiceField(label=q.question,
+								widget=forms.RadioSelect(renderer=HorizontalRadioRenderer),
+								choices = question_choices)
+						elif q.question_type == Question.SELECT:
+							question_choices = q.get_choices()
+							# add an empty option at the top so that the user has to
+							# explicitly select one of the options
+							question_choices = tuple([('', '-------------')]) + question_choices
+
+							self.fields["question_%d" % q.pk] = forms.ChoiceField(label=q.question,
+								widget=forms.Select, choices = question_choices)
+
+			#question is not a custom question, then include in survey
+			else:
+				if q.question_type == Question.RADIO:
+					question_choices = q.get_choices()
+
+					self.fields["question_%d" % q.pk] = forms.ChoiceField(label=q.question,
+						widget=forms.RadioSelect(renderer=HorizontalRadioRenderer),
+						choices = question_choices)
+				elif q.question_type == Question.SELECT:
+					question_choices = q.get_choices()
+					# add an empty option at the top so that the user has to
+					# explicitly select one of the options
+					question_choices = tuple([('', '-------------')]) + question_choices
+
+					self.fields["question_%d" % q.pk] = forms.ChoiceField(label=q.question,
+						widget=forms.Select, choices = question_choices)
 
 			# initialize the form field with values from a POST request, if any.
 			if data:

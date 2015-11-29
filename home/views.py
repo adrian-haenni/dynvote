@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse
 
 from home.models import Question, Category, Survey, Response, AnswerBase, AnswerRadio, AnswerSelect, AskBase
-from home.utils import generateMatches, generateSurveyFormInital, generateAskBasesFormInital
+from home.utils import generateMatches, generateSurveyFormInital
 
 
 # Create your views here.
@@ -131,7 +131,7 @@ def SurveyDetail(request, id):
     survey = Survey.objects.get(id=id)
 
     if request.method == 'POST':
-        form = ResponseForm(request.POST, survey=survey)
+        form = ResponseForm(request.POST, survey=survey, currentUser = request.user)
         if form.is_valid():
             response = form.save(request.user)
             uuid = response.interview_uuid
@@ -142,7 +142,7 @@ def SurveyDetail(request, id):
         #get inital values
         initialValues = generateSurveyFormInital(survey, request.user)
 
-        form = ResponseForm(survey=survey, initial=initialValues)
+        form = ResponseForm(survey=survey, currentUser = request.user, initial=initialValues)
 
     return render_to_response('home/survey_detail.html', {'response_form': form, 'survey': survey}, context)
 
@@ -203,7 +203,7 @@ def ask(request):
                 askedQuestion = form.save(user = request.user)
                 return HttpResponseRedirect('/home/ask/'+str(askedQuestion.id))
         else:
-            form = AskFormForCandidates()
+            form = AskFormForCandidates(user = request.user)
     else:
         if request.method == 'POST':
             form = AskFormForVoter(request.POST, user = request.user)
@@ -221,22 +221,21 @@ def AskDetail(request, id):
 
     return render_to_response('home/ask_detail.html', {}, context)
 
-def manage(request):
+def approve(request):
     context = RequestContext(request)
 
     allAskBasesForCurrentUser = AskBase.objects.filter(user = request.user)
 
     if request.method == 'POST':
-        form = AskBasesForm(request.POST, askBases=allAskBasesForCurrentUser)
-        if form.is_valid():
-            savedForm = form.save(request.user)
-            return HttpResponseRedirect('/home/manage/')
+        approve_form = AskBasesForm(request.POST, user = request.user, askBases=allAskBasesForCurrentUser)
+        if approve_form.is_valid():
+            approve_form.save()
+            return HttpResponseRedirect('/home/approve/')
     else:
-        #get inital values
-        initialValues = generateAskBasesFormInital(request.user)
-        form = AskBasesForm(initial=initialValues)
+        #inital values set by form
+        approve_form = AskBasesForm(user = request.user, askBases=allAskBasesForCurrentUser)
 
-    return render_to_response('home/manage.html', {'manage_form': form, }, context)
+    return render_to_response('home/approve.html', {'approve_form': approve_form, }, context)
 
 # Use the login_required() decorator to ensure only those logged in can access the view.
 @login_required
