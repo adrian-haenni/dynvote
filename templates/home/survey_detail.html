@@ -24,15 +24,18 @@
 
 		{% block content %}
 
+		<h2>{{survey.name}}</h2>
+
     	<div class="survey">
 			<form enctype="multipart/form-data" action="/home/survey/{{survey.id}}/" method="post">
 				{% csrf_token %}
 
 				<ul>
 				{% for field in response_form %}
-					<li class="q-item" value="">
+					<li class="li-item">
 						<div class="field-wrapper">
 							{{ field.errors }}
+							<div class="category-name">{{field.help_text}}</div>
 							<label class="label-inline">{{ field.label }}</label>
 							<div class="form-field-body">
 								{{ field }}

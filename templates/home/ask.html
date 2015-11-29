@@ -25,17 +25,18 @@
 
 		{% block content %}
 
-		<div class="ask-overview">
+		<div class="ask-form">
 
             <h2>Ask a question:</h2>
 
 			{% if isCandidate %}
-				<p>User is candidate</p>
+				<p>As you are a candidate, this question will be forwarded to all registered voters and candidates.</p>
 
 				<form enctype="multipart/form-data" action="/home/ask/" method="post">
 					{% csrf_token %}
+					<ul>
 					{% for field in ask_form %}
-					<li class="q-item" value="">
+					<li class="li-item" value="">
 						<div class="field-wrapper">
 							{{ field.errors }}
 							<label class="label-inline">{{ field.label }}</label>
@@ -45,16 +46,18 @@
 						</div>
 					</li>
 					{% endfor %}
+					</ul>
 					<div><input type="submit" value="Submit" /></div>
 				</form>
 
 			{% else %}
-				<p>User is voter</p>
+				<p>As you are a voter, you have to select the users you want to forward this question to.</p>
 
 				<form enctype="multipart/form-data" action="/home/ask/" method="post">
 					{% csrf_token %}
+					<ul>
 					{% for field in ask_form %}
-					<li class="q-item" value="">
+					<li class="il-item" value="">
 						<div class="field-wrapper">
 							{{ field.errors }}
 							<label class="label-inline">{{ field.label }}</label>
@@ -64,6 +67,7 @@
 						</div>
 					</li>
 					{% endfor %}
+					</ul>
 					<div><input type="submit" value="Submit" /></div>
 				</form>
 			{% endif %}

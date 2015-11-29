@@ -122,6 +122,10 @@ body {
 	font-smooth: always;
 }
 
+.content {
+	font-size: 15px;
+}
+
 i {
 	font-style: italic;
 }
@@ -159,8 +163,16 @@ a {
 	transition: color 0.3s ease-in-out 0s, background-color 0.3s ease-in-out 0s; 
 }
 
-a:hover, a:focus {
+a:hover, a:focus, a:active {
 	color: #143A5B;
+}
+
+.content a {
+	text-decoration: underline;
+}
+
+.content a:hover, .content a:focus, .content a:active {
+	text-decoration: none;
 }
 
 p {
@@ -191,18 +203,13 @@ h1.title {
 }
 
 h2 {
-	font-size: 1.75em;	
-	margin-bottom: 0.75em;
-    margin-top: 0;	
+	font-size: 17px;
+	margin-bottom: 0.5em;
+    margin-top: 0;
 }
 
 .promo-fields h2 {
 	font-size: 1.25em;
-}
-
-.survey-overview h2,
-.ask-overview h2 {
-	font-size: 16px;
 }
 
 .updated_time {
@@ -213,6 +220,11 @@ h3{
 	font-size: 1.625em;
 	margin-bottom: 1.2em;
     margin-top: 1.2em;	
+}
+
+.survey-element h3 {
+	margin-top: 0;
+	font-size: 15px;
 }
 
 h4 { 
@@ -254,10 +266,6 @@ h6 {
 
 .content-wrapper {
 	display: block;
-	min-height: 550px;
-}
-
-.content-wrapper .content {
 	min-height: 550px;
 }
 
@@ -304,6 +312,8 @@ h6 {
 }
 
 .status {
+	box-sizing: border-box;
+
 	margin: 0 auto;
 	padding: 0 15px;
 	width: auto;
@@ -334,6 +344,13 @@ h6 {
 	line-height: 1.2em;
 }
 
+.totalCount {
+	font-size: 12px;
+	line-height: 1.2em;
+	margin: 0 0 1em 0;
+	padding: 0;
+}
+
 .navigation {
 	float: right;
 	background-color: transparent;
@@ -352,30 +369,45 @@ h6 {
 	margin-bottom: 0;
 }
 
-.survey ul {
+.content ul {
 	margin-bottom: 1em;
 }
 
-.survey ul li {
+.content ul li {
 	margin-bottom: 1em;
 }
 
-.survey label {
+.content .ask-form ul li {
+	margin-bottom: 0.25em;
+}
+
+.content label {
 	font-weight: normal;
 }
 
 .survey-overview,
-.ask-overview {
+.eval-overview,
+.ask-overview,
+.ask-form {
 	float: left;
 }
 
-.survey-element:nth-of-type(odd) {
-    background: #e0e0e0;
-    padding: 1em 1em;
+.survey-overview {
+width: 100%;
 }
 
-.survey-link {
+.survey-element {
+    background: #e0e0e0;
+    padding: 2em;
+    margin: 0 2em 2em 0;
+    float: left;
+    max-width: 30%;
+}
 
+.category-name {
+	font-size: 11px;
+	font-style: italic;
+	line-height: 1.2em;
 }
 
 .clearfix::after{
@@ -441,8 +473,11 @@ input[type="text"], input[type="password"], input[type="email"], textarea {
     padding: 7px 8px;
 }
 
-.ask-overview input[type="text"], .ask-overview input[type="password"], .ask-overview input[type="email"], .ask-overview textarea {
-	width: 450px;
+.ask-form input[type="text"],
+.ask-form input[type="password"],
+.ask-form input[type="email"],
+.ask-form textarea {
+	width: 550px;
 }
 
 input[type="text"]:focus, 
@@ -466,6 +501,8 @@ input[type="submit"] {
 	width: auto;
 	
 	border: 0 none;
+
+	margin-bottom: 1em;
 	
     -moz-transition: background-color .25s ease-in;
     -webkit-transition: background-color .25s ease-in;
@@ -481,8 +518,23 @@ input[type="submit"]:active {
 }
 
 /** PERCENTAGE BAR **/
+
+.eval-result-overview {
+	width: 100%;
+	float: left;
+}
+
+.eval-result-overview p {
+	margin-bottom: 0;
+}
+
+.bar-wrapper {
+	width: 100%;
+	float: left;
+}
+
 .bar-main-container {
-	margin: 10px auto;
+	margin: 0  0 8px 0;
 	width: 300px;
 	height: 50px;
 	-webkit-border-radius: 4px;
@@ -492,6 +544,7 @@ input[type="submit"]:active {
 	font-weight: normal;
 	font-size: 0.8em;
 	color: #FFF;
+	float: left;
 }
 
 .wrap { padding: 8px; }
@@ -505,6 +558,8 @@ input[type="submit"]:active {
 	padding: 9px 0px;
 	width: 18%;
 	height: 16px;
+	text-align: center;
+	line-height: 16px;
 }
 
 .bar-container {

@@ -30,7 +30,11 @@
 
 			{% for survey in surveys %}
 			<div class="survey-element">
-				<a class="survey-link" href="/home/survey/{{survey.id}}">{{survey.name}}</a><br/>
+				<h3>{{survey.name}}</h3>
+				<p>{{survey.description}}</p>
+				<p>
+					<a class="survey-link" href="/home/survey/{{survey.id}}">Answer the survey</a><br/>
+				</p>
 			</div>
 			{% endfor %}
 		</div>

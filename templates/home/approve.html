@@ -26,7 +26,7 @@
 
 		<div class="ask-overview">
 
-            <h2>Manage Questions:</h2>
+            <h2 class="title">Manage Questions:</h2>
 
 			<p>Check all question which you want to approve</p>
 
@@ -36,7 +36,7 @@
 
 				<ul>
 				{% for field in approve_form %}
-					<li class="q-item" value="">
+					<li class="li-item">
 						<div class="field-wrapper">
 							<label class="label-inline">{{ field.label }} - <i>asked by {{ field.help_text }}</i></label>
 							<div class="form-field-body">
@@ -46,7 +46,7 @@
 					</li>
 				{% endfor %}
 				</ul>
-				<div><input type="submit" value="Submit" /></div>
+				<div><input type="submit" value="Save" /></div>
 			</form>
 			</div>
 

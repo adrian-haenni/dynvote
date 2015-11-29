@@ -28,14 +28,19 @@
 
             <h2>Select a survey to evaluate:</h2>
 
-            {% for response in responses %}
-            <div class="survey-element">
-				<p>
-					<a class="survey-link" href="/home/evaluation/{{response.interview_uuid}}">{{response.survey.name}}</a><br/>
-					<div class="updated_time">Last updated: {{response.updated}}<br/></div>
-				</p>
-            </div>
-            {% endfor %}
+			{% if isEmpty %}
+				<p>There are currently no answers saved to your account. <a href="{% url 'survey' %}">Take a survey</a>.</p>
+			{% else %}
+				{% for response in responses %}
+				<div class="survey-element">
+					<h3>{{response.survey.name}}</h3>
+					<p>
+						<a class="survey-link" href="/home/evaluation/{{response.interview_uuid}}">Go to your evaluation</a><br/>
+						<div class="updated_time">Last updated: {{response.updated}}<br/></div>
+					</p>
+				</div>
+				{% endfor %}
+			{% endif %}
 		</div>
 
 		{% endblock %}

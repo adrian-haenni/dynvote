@@ -16,15 +16,23 @@ def generateSurveyFormInital(survey, user):
 
             answerBases = AnswerBase.objects.filter(response = previousResponseOfCurrentUser)
 
-            for answerBase in answerBases:
+            setOfAllAnsweredQuestionIDs = set()
 
+            for answerBase in answerBases:
                 if answerBase.question.question_type == Question.RADIO:
                     a = AnswerRadio.objects.get(id=answerBase.id)
                     initialValues["question_%d" % a.question.pk] = a.body
+                    setOfAllAnsweredQuestionIDs.add(a.question.pk)
 
                 elif answerBase.question.question_type == Question.SELECT:
                     a = AnswerSelect.objects.get(id=answerBase.id)
                     initialValues["question_%d" % a.question.pk] = a.body
+                    setOfAllAnsweredQuestionIDs.add(a.question.pk)
+
+            unansweredQuestion = survey.questions().exclude(pk__in = setOfAllAnsweredQuestionIDs)
+
+            for q in unansweredQuestion:
+                initialValues["question_%d" % q.pk] = "No Answer"
 
         #if response does not exists fill out with "No Answer"
         else:
@@ -118,6 +126,7 @@ def generateMatches(userResponse, surveyOfResponse):
                 #create the dict
                 dict = {'candidate': candidate,
                         'percentage': percentage,
+                        'totalAnswers': numOfCandidateAnswersWithoutNoAnswer,
                         }
 
                 matchResults.append(dict)

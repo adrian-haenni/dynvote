@@ -93,26 +93,30 @@ class AskBasesForm(forms.Form):
 			#create label
 			#own question, i'm candidate, delete
 			if (self.user.pk == askBase.customQuestion.creator.pk) and askBase.customQuestion.creator.groups.filter(name='Candidate').exists():
-				label = "%s - ( <a href=\"/home/deleteq/%d\">Delete</a> )" % (askBase.customQuestion.question, askBase.customQuestion.id)
+				label = "%s - ( <a href=\"/home/deleteq/%d\">Delete</a> ) - <i>%s</i>" % (askBase.customQuestion.question, askBase.customQuestion.id, askBase.customQuestion.category_type.category)
 
 			#own question, i'm not candidate, delete, forward
 			elif (self.user.pk == askBase.customQuestion.creator.pk) and not askBase.customQuestion.creator.groups.filter(name='Candidate').exists():
-				label = "%s - ( <a href=\"/home/deleteq/%d\">Delete</a>, <a href=\"/home/forward/%d\">Forward</a> )" % (askBase.customQuestion.question, askBase.customQuestion.id, askBase.customQuestion.id)
+				label = "%s - ( <a href=\"/home/deleteq/%d\">Delete</a>, <a href=\"/home/forward/%d\">Forward</a> ) - <i>%s</i>" % (askBase.customQuestion.question, askBase.customQuestion.id, askBase.customQuestion.id, askBase.customQuestion.category_type.category)
 
 			#other question, creator not candidate, remove, forward
 			elif (self.user.pk != askBase.customQuestion.creator.pk) and not askBase.customQuestion.creator.groups.filter(name='Candidate').exists():
-				label = "%s - ( <a href=\"/home/deleteq/%d\">Remove</a>, <a href=\"/home/forward/%d\">Forward</a> )" % (askBase.customQuestion.question, askBase.customQuestion.id, askBase.customQuestion.id)
+				label = "%s - ( <a href=\"/home/deleteq/%d\">Remove</a>, <a href=\"/home/forward/%d\">Forward</a> ) - <i>%s</i>" % (askBase.customQuestion.question, askBase.customQuestion.id, askBase.customQuestion.id, askBase.customQuestion.category_type.category)
 
 			#other question, creator candidate, cannot do anything
 			else:
-				label = "%s" % askBase.customQuestion.question
+				label = "%s - <i>%s</i>" % (askBase.customQuestion.question, askBase.customQuestion.category_type.category)
 
 			self.fields["question_%d" % askBase.customQuestion.pk] = forms.BooleanField(label=mark_safe(label),
 																					   initial=askBase.isAccepted,
 																					   required=False,)
 				#self.fields["question_%d" % askBase.customQuestion.pk].widget.attrs['onclick'] = "return false"
 			if self.user.pk != askBase.customQuestion.creator.pk:
-				self.fields["question_%d" % askBase.customQuestion.pk].help_text = askBase.customQuestion.creator.username
+				self.fields["question_%d" % askBase.customQuestion.pk].help_text = askBase.customQuestion.creator.first_name \
+																				   + " " \
+																				   + askBase.customQuestion.creator.last_name \
+																				   + " ("+ askBase.customQuestion.creator.username \
+																				   + ")"
 			else:
 				self.fields["question_%d" % askBase.customQuestion.pk].help_text = "yourself"
 
@@ -199,7 +203,7 @@ class ResponseForm(models.ModelForm):
 		# add a field for each survey question, corresponding to the question
 		# type as appropriate.
 		data = kwargs.get('data')
-		for q in survey.questions():
+		for q in survey.questions().order_by('category_type'):
 
 			#Add special treatment for question objects that are also custom questions
 			if CustomQuestion.objects.filter(pk=q.pk).exists():
@@ -215,6 +219,7 @@ class ResponseForm(models.ModelForm):
 							self.fields["question_%d" % q.pk] = forms.ChoiceField(label=q.question,
 								widget=forms.RadioSelect(renderer=HorizontalRadioRenderer),
 								choices = question_choices)
+							self.fields["question_%d" % q.pk].help_text = q.category_type.category
 						elif q.question_type == Question.SELECT:
 							question_choices = q.get_choices()
 							# add an empty option at the top so that the user has to
@@ -223,6 +228,7 @@ class ResponseForm(models.ModelForm):
 
 							self.fields["question_%d" % q.pk] = forms.ChoiceField(label=q.question,
 								widget=forms.Select, choices = question_choices)
+							self.fields["question_%d" % q.pk].help_text = q.category_type.category
 
 			#question is not a custom question, then include in survey
 			else:
@@ -232,6 +238,8 @@ class ResponseForm(models.ModelForm):
 					self.fields["question_%d" % q.pk] = forms.ChoiceField(label=q.question,
 						widget=forms.RadioSelect(renderer=HorizontalRadioRenderer),
 						choices = question_choices)
+					self.fields["question_%d" % q.pk].help_text = q.category_type.category
+
 				elif q.question_type == Question.SELECT:
 					question_choices = q.get_choices()
 					# add an empty option at the top so that the user has to
@@ -240,6 +248,7 @@ class ResponseForm(models.ModelForm):
 
 					self.fields["question_%d" % q.pk] = forms.ChoiceField(label=q.question,
 						widget=forms.Select, choices = question_choices)
+					self.fields["question_%d" % q.pk].help_text = q.category_type.category
 
 			# initialize the form field with values from a POST request, if any.
 			if data:

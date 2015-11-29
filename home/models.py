@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 from django.core.exceptions import ValidationError
+from django.conf import settings
 
 
 # Create your models here.

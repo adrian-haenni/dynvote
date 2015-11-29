@@ -24,22 +24,25 @@
 
 		{% block content %}
 
-		<div class="survey-overview">
+		<div class="eval-result-overview">
 
 			{% if exists%}
             <h2>Your Matchlist:</h2>
 			{% for match in matchList %}
 
-			<p>{{match.candidate.username}}</p>
-
-			<div class="bar-main-container azure">
-				<div class="wrap">
-      				<div class="bar-percentage" data-percentage="{{match.percentage}}"></div>
-					<div class="bar-container">
-						<div class="bar"></div>
+			<p>{{match.candidate.first_name}} {{match.candidate.last_name}}, <i>{{match.candidate.username}}</i></p>
+			<div class="bar-wrapper">
+				<div class="bar-main-container azure">
+					<div class="wrap">
+						<div class="bar-percentage" data-percentage="{{match.percentage}}"></div>
+						<div class="bar-container">
+							<div class="bar"></div>
+						</div>
 					</div>
 				</div>
-  			</div>
+			</div>
+
+			<div class="totalCount">Total counted answers: {{match.totalAnswers}}</div>
 
 			{% endfor %}
 

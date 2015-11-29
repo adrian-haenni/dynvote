@@ -27,6 +27,7 @@
 
 		<div class="ask-overview">
 
+			{% if not isCreatedByCandidate %}
             <h2>Forward Question To:</h2>
 
 			<p>{{customQuestion.question}}</p>
@@ -46,6 +47,9 @@
 					{% endfor %}
 					<div><input type="submit" value="Submit" /></div>
 				</form>
+			{% else %}
+			<p>You cannot forward a question that is created by a candidate.</p>
+			{% endif%}
 
 		</div>
 

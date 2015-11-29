@@ -127,6 +127,8 @@ def user_login(request):
         # blank dictionary object...
         return render_to_response('home/login.html', {}, context)
 
+# Use the login_required() decorator to ensure only those logged in can access the view.
+@login_required
 def SurveyDetail(request, id):
     #Obtain the context for the user's request.
 
@@ -149,6 +151,8 @@ def SurveyDetail(request, id):
 
     return render_to_response('home/survey_detail.html', {'response_form': form, 'survey': survey}, context)
 
+# Use the login_required() decorator to ensure only those logged in can access the view.
+@login_required
 def survey(request):
     # Like before, obtain the context for the user's request.
     context = RequestContext(request)
@@ -159,6 +163,8 @@ def survey(request):
         'surveys': surveys,
     }, context)
 
+# Use the login_required() decorator to ensure only those logged in can access the view.
+@login_required
 def confirm(request, uuid):
     context = RequestContext(request)
 
@@ -168,7 +174,8 @@ def confirm(request, uuid):
     else:
         return render_to_response('home/confirm.html', {'uuid': uuid, 'exists': False, }, context)
 
-
+# Use the login_required() decorator to ensure only those logged in can access the view.
+@login_required
 def EvaluationDetail(request, uuid):
     context = RequestContext(request)
 
@@ -184,16 +191,25 @@ def EvaluationDetail(request, uuid):
 
         return render_to_response('home/evaluation_detail.html', {'uuid': uuid, 'exists': False, 'matchList': None, }, context)
 
+# Use the login_required() decorator to ensure only those logged in can access the view.
+@login_required
 def evaluation(request):
     context = RequestContext(request)
 
     #get evaluations of current user
     responses = Response.objects.filter(user = request.user)
+    isEmpty = True
+
+    if responses.count() > 0:
+        isEmpty = False
 
     return render_to_response('home/evaluation.html', {
         'responses': responses,
+        'isEmpty': isEmpty,
     }, context)
 
+# Use the login_required() decorator to ensure only those logged in can access the view.
+@login_required
 def ask(request):
     context = RequestContext(request)
 
@@ -219,11 +235,17 @@ def ask(request):
 
     return render_to_response('home/ask.html', {'ask_form': form, 'isCandidate': isCandidate,}, context)
 
+# Use the login_required() decorator to ensure only those logged in can access the view.
+@login_required
 def AskDetail(request, id):
     context = RequestContext(request)
 
-    return render_to_response('home/ask_detail.html', {}, context)
+    customQuestion = CustomQuestion.objects.get(id = id)
 
+    return render_to_response('home/ask_detail.html', {'customQuestion': customQuestion}, context)
+
+# Use the login_required() decorator to ensure only those logged in can access the view.
+@login_required
 def approve(request):
     context = RequestContext(request)
 
@@ -240,6 +262,8 @@ def approve(request):
 
     return render_to_response('home/approve.html', {'approve_form': approve_form, }, context)
 
+# Use the login_required() decorator to ensure only those logged in can access the view.
+@login_required
 def deleteq(request, id):
     context = RequestContext(request)
 
@@ -262,12 +286,18 @@ def deleteq(request, id):
     return render_to_response('home/deleteq.html', {'delete_question_form': delete_question_form,
                                                     'customQuestion': customQuestion,
                                                     'isDelete': isDelete,}, context)
-
+# Use the login_required() decorator to ensure only those logged in can access the view.
+@login_required
 def forward(request, id):
     context = RequestContext(request)
 
     #get custom question
     customQuestion = CustomQuestion.objects.get(id = id)
+
+    isCreatedByCandidate = False
+    #check if custom question is created by candidate
+    if customQuestion.creator.groups.filter(name='Candidate').exists():
+        isCreatedByCandidate = True
 
     if request.method == 'POST':
         forward_question_form = ForwardQuestionForm(request.POST, user = request.user, customQuestion=customQuestion)
@@ -280,6 +310,7 @@ def forward(request, id):
 
     return render_to_response('home/forward.html', {'forward_question_form': forward_question_form,
                                                     'customQuestion': customQuestion,
+                                                    'isCreatedByCandidate': isCreatedByCandidate,
                                                     }, context)
 
 # Use the login_required() decorator to ensure only those logged in can access the view.
