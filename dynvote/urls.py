@@ -21,6 +21,5 @@ urlpatterns = [
     url(r'^$', lambda r: HttpResponseRedirect('home/')),
     url(r'^$', include('home.urls')),
     url(r'^home/', include('home.urls')),
-    url(r'^questions/', include('questions.urls', namespace="questions")),
     url(r'^admin/', include(admin.site.urls)),
 ]
