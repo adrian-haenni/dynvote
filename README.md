@@ -1,5 +1,6 @@
-# DynVote 
+# DynVote
 ###### The Voting Advice Application With Dynamic User Profiles
+###### [https://dynvote.herokuapp.com](https://dynvote.herokuapp.com)
 ---
 
 The application DynVote is a Voting Advice Application designed in the fashion of SmartVote that provides users with recommendations of candidates based on the degree of accordance of their political profiles. Unlike other VAAs, DynVote matches voters with candidates on a dynamic level, which means that user profiles are not static. A dynamic user profile in this application is characterized by the feature that lets voters and candidates create own questions and publish them to other users.
