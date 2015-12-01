@@ -173,7 +173,7 @@ def checkForSameAnswer(userAnswerBase, candidateAnswerBase):
 
     if a.body == c.body:
         print "Same Answer"
-        sameAnswer = False
+        sameAnswer = True
         if a.body == "No Answer":
             bothIsNoAnswer = True
 
@@ -198,6 +198,10 @@ def checkForApprovance(customQuestion, userPK, candidatePK):
     return False
 
 def getPercentage(hits, total):
+
+    if total == 0:
+        return int(0)
+
     percentage = float(hits) / float(total)
     return int(percentage * 100)
 
