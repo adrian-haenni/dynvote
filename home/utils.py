@@ -55,6 +55,7 @@ def generateMatches(userResponse, surveyOfResponse):
         candiateResponse = Response.objects.filter(survey = surveyOfResponse, user = candidate)
 
         numOfSameAnswersForThisCandidate = 0
+        numOfCountedComparedAnswers = 0
 
         #if candidate answered the survey of the user we evaluate
         if candiateResponse.exists():
@@ -81,30 +82,40 @@ def generateMatches(userResponse, surveyOfResponse):
 
                             #check if question is a custom question, if so, check if it has been approved by candidate and voter/candidate
                             if CustomQuestion.objects.filter(pk=userAnswerBase.question.pk).exists():
+
                                 customQuestion = CustomQuestion.objects.get(pk=userAnswerBase.question.pk)
 
                                 bothApproved = checkForApprovance(customQuestion, userResponse[0].user.pk, candiateResponse[0].user.pk)
                                 if bothApproved:
                                     print "BOTH APPROVED"
-                                    sameAnswer, bothIsNoAnswer  = checkForSameAnswer(userAnswerBase, candidateAnswerBase)
+                                    sameAnswer, bothIsNoAnswer, atLeastOneIsNoAnswer  = checkForSameAnswer(userAnswerBase, candidateAnswerBase)
 
                                     if bothIsNoAnswer:
                                         break
                                     elif sameAnswer:
+                                        numOfCountedComparedAnswers += 1
                                         numOfSameAnswersForThisCandidate += 1
+                                    elif not atLeastOneIsNoAnswer:
+                                        numOfCountedComparedAnswers += 1
 
                                     break
+
                             else:
-                                sameAnswer, bothIsNoAnswer  = checkForSameAnswer(userAnswerBase, candidateAnswerBase)
+
+                                sameAnswer, bothIsNoAnswer, atLeastOneIsNoAnswer  = checkForSameAnswer(userAnswerBase, candidateAnswerBase)
 
                                 if bothIsNoAnswer:
                                     break
                                 elif sameAnswer:
+                                    numOfCountedComparedAnswers += 1
                                     numOfSameAnswersForThisCandidate += 1
+                                elif not atLeastOneIsNoAnswer:
+                                    numOfCountedComparedAnswers += 1
 
                                 break
 
-
+                #TO DO
+                """
                 numOfCandidateAnswersWithoutNoAnswer = 0
                 for answerBaseToCount in answerBasesOfCandidate:
                     if answerBaseToCount.question.question_type == Question.RADIO:
@@ -116,17 +127,19 @@ def generateMatches(userResponse, surveyOfResponse):
                         a = AnswerSelect.objects.get(id=answerBaseToCount.id)
                         if a.body != "No Answer":
                             numOfCandidateAnswersWithoutNoAnswer += 1
+                """
 
-                print "NUMBER of answers: %d" % numOfCandidateAnswersWithoutNoAnswer
+
+                print "NUMBER of compared answers: %d" % numOfCountedComparedAnswers
                 print "NUMBER of same answers: %d" % numOfSameAnswersForThisCandidate
 
-                percentage = getPercentage(numOfSameAnswersForThisCandidate, numOfCandidateAnswersWithoutNoAnswer)
+                percentage = getPercentage(numOfSameAnswersForThisCandidate, numOfCountedComparedAnswers)
                 print "percentage %d" % percentage
 
                 #create the dict
                 dict = {'candidate': candidate,
                         'percentage': percentage,
-                        'totalAnswers': numOfCandidateAnswersWithoutNoAnswer,
+                        'totalAnswers': numOfCountedComparedAnswers,
                         }
 
                 matchResults.append(dict)
@@ -137,6 +150,10 @@ def generateMatches(userResponse, surveyOfResponse):
 
 
 def checkForSameAnswer(userAnswerBase, candidateAnswerBase):
+
+    sameAnswer = False
+    bothIsNoAnswer = False
+    atLeastOneIsNoAnswer = False
 
     if userAnswerBase.question.question_type == Question.RADIO:
         a = AnswerRadio.objects.get(id=userAnswerBase.id)
@@ -150,14 +167,17 @@ def checkForSameAnswer(userAnswerBase, candidateAnswerBase):
         #print "user answer: %s" % a.body
         #print "cand answer: %s" % c.body
 
-    if a.body == c.body:
-        print "SAME ANSWER"
-        if a.body == "No Answer":
-            return (True, True)
-        else:
-            return (True, False)
+    if (a.body == "No Answer") or (c.body == "No Answer"):
+        print "One answered with No Answer"
+        atLeastOneIsNoAnswer = True
 
-    return (False, False)
+    if a.body == c.body:
+        print "Same Answer"
+        sameAnswer = False
+        if a.body == "No Answer":
+            bothIsNoAnswer = True
+
+    return (sameAnswer, bothIsNoAnswer, atLeastOneIsNoAnswer)
 
 def checkForApprovance(customQuestion, userPK, candidatePK):
     print "customQuestion: %s" % customQuestion.question[0:24]+"..."
