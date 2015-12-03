@@ -15,6 +15,7 @@ Please follow the following instructions in order to make the application run lo
 * Install SQLite: [SQLite Installation Guide](http://www.tutorialspoint.com/sqlite/sqlite_installation.htm)
 * Go to your Terminal and type:
     * `$ cd dynvote`
+    * `$ python manage.py makemigrations`
     * `$ python manage.py migrate`
     * `$ python manage.py runserver`
     * `$ open "http://localhost:8000"`
