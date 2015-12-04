@@ -28,7 +28,7 @@ class AskFormForCandidates(models.ModelForm):
 		customQuestion = super(AskFormForCandidates, self).save(commit=False)
 		customQuestion.creator = user
 		customQuestion.question_type = Question.RADIO
-		customQuestion.choices = 'Agree, Partially Agree, Partially Disagree, Disagree'
+		customQuestion.choices = 'Agree, Partially Agree, Partially Disagree, Disagree, No Answer'
 		customQuestion.save()
 
 		createAskBasesForUsers(User.objects.all(), user, customQuestion)
